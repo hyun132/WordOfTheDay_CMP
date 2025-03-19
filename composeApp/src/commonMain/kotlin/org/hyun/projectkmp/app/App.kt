@@ -1,16 +1,34 @@
 package org.hyun.projectkmp.app
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import org.hyun.projectkmp.core.presentation.DeepPurple
+import org.hyun.projectkmp.core.presentation.LightGray
 import org.hyun.projectkmp.word.presentation.WordHomeScreenRoot
 import org.hyun.projectkmp.word.presentation.WordHomeViewModel
 import org.hyun.projectkmp.word.presentation.learning.LearningScreenRoot
@@ -22,35 +40,84 @@ import org.koin.compose.viewmodel.koinViewModel
 fun App() {
     MaterialTheme {
         val navController = rememberNavController()
-        NavHost(
-            navController = navController,
-            startDestination = Routes.MainGraph
-        ) {
-            navigation<Routes.MainGraph>(
-                startDestination = Routes.Home
-            ) {
-                composable<Routes.Home> {
-                    val viewModel = koinViewModel<WordHomeViewModel>()
+        val currentRoute =
+            navController.currentBackStackEntryAsState().value?.destination?.route?.split(".")
+                ?.last()
+        val bottomNavRoutes = bottomNavItems.map { it.label }
 
-                    WordHomeScreenRoot(
-                        viewModel = viewModel,
-                        onWordClick = { word ->
-                            navController.navigate(
-                                Routes.Word(word = word)
-                            )
-                        }
-                    )
-                }
-
-                composable<Routes.Word> {
-                    LearningScreenRoot(
-                        word = it.toRoute<Routes.Word>().word,
-                        onBackClick = {
-                            navController.navigateUp()
-                        }
-                    )
+        Scaffold(
+            bottomBar = {
+                AnimatedVisibility(
+                    visible = currentRoute in bottomNavRoutes,
+                    enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
+                    exit = fadeOut() + slideOutVertically(targetOffsetY = { it })
+                ) {
+                    if (currentRoute != null) {
+                        BottomNavBar(navController, currentRoute)
+                    }
                 }
             }
+        ) { paddingValue ->
+            NavHost(
+                navController = navController,
+                startDestination = Routes.MainGraph,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValue)
+            ) {
+                navigation<Routes.MainGraph>(
+                    startDestination = Routes.Home
+                ) {
+                    composable<Routes.Home> {
+                        val viewModel = koinViewModel<WordHomeViewModel>()
+
+                        WordHomeScreenRoot(
+                            viewModel = viewModel,
+                            onWordClick = { word ->
+                                navController.navigate(
+                                    Routes.Word(word = word)
+                                )
+                            }
+                        )
+                    }
+
+                    composable<Routes.Word> {
+                        LearningScreenRoot(
+                            word = it.toRoute<Routes.Word>().word,
+                            onBackClick = {
+                                navController.navigateUp()
+                            }
+                        )
+                    }
+
+                    composable<Routes.History> {
+                        Text(text = "History")
+                    }
+
+                    composable<Routes.Profile> {
+                        Text(text = "Profile")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun BottomNavBar(navController: NavController, currentRoute: String) {
+    BottomNavigation(
+        modifier = Modifier,
+        backgroundColor = Color.White,
+        elevation = 12.dp
+    ) {
+        bottomNavItems.forEach { navItem ->
+            BottomNavigationItem(
+                selected = currentRoute == navItem.route.toString(),
+                onClick = { navController.navigate(navItem.route) },
+                icon = { Icon(navItem.icon, contentDescription = navItem.label) },
+                selectedContentColor = DeepPurple,
+                unselectedContentColor = LightGray
+            )
         }
     }
 }

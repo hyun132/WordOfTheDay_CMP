@@ -58,11 +58,11 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
 
-            implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.jetbrains.compose.navigation)
+            implementation(libs.androidx.navigation.common.ktx)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.compose.material)
             implementation(libs.sqlite.bundled)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)

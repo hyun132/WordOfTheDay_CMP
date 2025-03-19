@@ -1,8 +1,13 @@
 package org.hyun.projectkmp.app
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.serialization.Serializable
 
-interface Routes {
+sealed interface Routes {
     @Serializable
     data object MainGraph:Routes
 
@@ -18,3 +23,16 @@ interface Routes {
     @Serializable
     data object Profile:Routes
 }
+
+
+data class NavItem(
+    val route: Routes,
+    val label: String,
+    val icon: ImageVector
+)
+
+val bottomNavItems = listOf(
+    NavItem(Routes.Home, "Home", Icons.Default.Home),
+    NavItem(Routes.History, "History", Icons.Default.Menu),
+    NavItem(Routes.Profile, "Profile", Icons.Default.Person)
+)
