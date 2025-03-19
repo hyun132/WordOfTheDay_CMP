@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="home_title">Today's word</string>
+    <string name="get_new_word">I want to change today's word</string>
+    <string name="learning_start">Learning Start</string>
+</resources>
