@@ -69,7 +69,7 @@ fun App() {
                     startDestination = Routes.Home
                 ) {
                     composable<Routes.Home> {
-                        val viewModel = koinViewModel<WordHomeViewModel>()
+                        val viewModel = it.sharedKoinViewModel<WordHomeViewModel>(navController)
 
                         WordHomeScreenRoot(
                             viewModel = viewModel,
