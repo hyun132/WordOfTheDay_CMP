@@ -95,6 +95,10 @@ fun App() {
                         Text(text = "History")
                     }
 
+                    composable<Routes.BookMark> {
+                        Text(text = "BookMark")
+                    }
+
                     composable<Routes.Profile> {
                         Text(text = "Profile")
                     }
