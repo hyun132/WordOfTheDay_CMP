@@ -12,7 +12,7 @@ fun WordDto.toWord(): Word {
 }
 
 fun SentenceDto.toSentence(): List<Sentence> {
-    return sentence?.map {
+    return sentences?.map {
         Sentence(
             sentence = it ?: ""
         )

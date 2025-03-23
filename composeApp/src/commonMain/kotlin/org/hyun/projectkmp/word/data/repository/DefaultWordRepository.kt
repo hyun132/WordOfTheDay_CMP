@@ -27,6 +27,6 @@ class DefaultWordRepository(
 
     override suspend fun getSentences(requestQuery: SentencesRequestQuery): Result<List<String>, DataError.Remote> {
         return remoteWordDataSource.getSentences(requestQuery)
-            .map { it.sentence ?: emptyList() }
+            .map { it.sentences ?: emptyList() }
     }
 }

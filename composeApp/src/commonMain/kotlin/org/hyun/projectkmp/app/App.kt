@@ -26,12 +26,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import org.hyun.projectkmp.core.presentation.DeepPurple
 import org.hyun.projectkmp.core.presentation.LightGray
 import org.hyun.projectkmp.word.presentation.WordHomeScreenRoot
 import org.hyun.projectkmp.word.presentation.WordHomeViewModel
 import org.hyun.projectkmp.word.presentation.learning.LearningScreenRoot
+import org.hyun.projectkmp.word.presentation.learning.LearningViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -82,8 +82,9 @@ fun App() {
                     }
 
                     composable<Routes.Word> {
+                        val viewModel = koinViewModel<LearningViewModel>()
                         LearningScreenRoot(
-                            word = it.toRoute<Routes.Word>().word,
+                            viewModel = viewModel,
                             onBackClick = {
                                 navController.navigateUp()
                             }

@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SentenceDto(
-    val sentence: List<String>? = emptyList()
+    val sentences: List<String>? = emptyList()
 )
