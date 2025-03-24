@@ -14,9 +14,9 @@ import kotlinx.coroutines.launch
 import org.hyun.projectkmp.app.Routes
 import org.hyun.projectkmp.core.domain.onError
 import org.hyun.projectkmp.core.domain.onSuccess
-import org.hyun.projectkmp.core.presentation.UiText
 import org.hyun.projectkmp.core.presentation.toUiText
 import org.hyun.projectkmp.word.domain.Difficulty
+import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
 import org.hyun.projectkmp.word.domain.repository.WordRepository
 
@@ -50,11 +50,28 @@ class LearningViewModel(
         }
     }
 
-    fun bookMark(sentence: String) {
-        println("$sentence is bookmarked")
+    private fun bookMark(sentence: String) {
+        viewModelScope.launch {
+            repository.saveBookMark(
+                BookMarkRequestQuery(sentence = sentence)
+            )
+                .onSuccess {
+                    _state.update {
+                        it.copy(isLoading = false)
+                    }
+                }
+                .onError { e ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = e.toUiText()
+                        )
+                    }
+                }
+        }
     }
 
-    fun getSentences() {
+    private fun getSentences() {
         viewModelScope.launch {
             repository.getSentences(
                 SentencesRequestQuery(
