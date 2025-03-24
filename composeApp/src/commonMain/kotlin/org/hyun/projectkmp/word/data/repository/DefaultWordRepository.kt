@@ -3,8 +3,10 @@ package org.hyun.projectkmp.word.data.repository
 import org.hyun.projectkmp.core.domain.DataError
 import org.hyun.projectkmp.core.domain.Result
 import org.hyun.projectkmp.core.domain.map
+import org.hyun.projectkmp.word.data.mapper.toSentence
 import org.hyun.projectkmp.word.data.mapper.toWord
 import org.hyun.projectkmp.word.data.network.RemoteWordDataSource
+import org.hyun.projectkmp.word.domain.Sentences
 import org.hyun.projectkmp.word.domain.Word
 import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.BookMarksRequestQuery
@@ -29,14 +31,15 @@ class DefaultWordRepository(
 
     override suspend fun getSentences(requestQuery: SentencesRequestQuery): Result<List<String>, DataError.Remote> {
         return remoteWordDataSource.getSentences(requestQuery)
-            .map { it.sentences ?: emptyList() }
+            .map { it.sentences?.map { it.sentence ?: "" } ?: emptyList() }
     }
 
     override suspend fun saveBookMark(requestQuery: BookMarkRequestQuery): Result<String, DataError.Remote> {
         return remoteWordDataSource.saveBookMark(requestQuery).map { it.sentence ?: "" }
     }
 
-    override suspend fun getBookMarks(requestQuery: BookMarksRequestQuery): Result<List<String>, DataError.Remote> {
-        return remoteWordDataSource.getBookMarks(requestQuery).map { it.sentences ?: emptyList() }
+    override suspend fun getBookMarks(requestQuery: BookMarksRequestQuery): Result<Sentences, DataError.Remote> {
+        return remoteWordDataSource.getBookMarks(requestQuery)
+            .map { Sentences(sentences = it.sentences?.map { it.toSentence() } ?: emptyList()) }
     }
 }

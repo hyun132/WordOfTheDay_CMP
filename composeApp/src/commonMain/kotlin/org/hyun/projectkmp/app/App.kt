@@ -30,6 +30,8 @@ import org.hyun.projectkmp.core.presentation.DeepPurple
 import org.hyun.projectkmp.core.presentation.LightGray
 import org.hyun.projectkmp.word.presentation.WordHomeScreenRoot
 import org.hyun.projectkmp.word.presentation.WordHomeViewModel
+import org.hyun.projectkmp.word.presentation.bookmark.BookMarkListScreenRoot
+import org.hyun.projectkmp.word.presentation.bookmark.BookmarkViewModel
 import org.hyun.projectkmp.word.presentation.learning.LearningScreenRoot
 import org.hyun.projectkmp.word.presentation.learning.LearningViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -95,8 +97,16 @@ fun App() {
                         Text(text = "History")
                     }
 
-                    composable<Routes.BookMark> {
-                        Text(text = "BookMark")
+                    composable<Routes.Bookmark> {
+                        Text(text = "Bookmark")
+
+                        val viewModel = koinViewModel<BookmarkViewModel>()
+                        BookMarkListScreenRoot(
+                            viewModel = viewModel,
+                            onBackClick = {
+                                navController.navigateUp()
+                            }
+                        )
                     }
 
                     composable<Routes.Profile> {
