@@ -22,7 +22,7 @@ val sharedModule = module {
     single { HttpClientFactory.create(get()) }
     singleOf(::KtorRemoteWordDataSource).bind<RemoteWordDataSource>()
     singleOf(::DefaultWordRepository).bind<WordRepository>()
-
+    singleOf(::LocalRepository)
     single { Settings() }
 
     viewModelOf(::WordHomeViewModel)
