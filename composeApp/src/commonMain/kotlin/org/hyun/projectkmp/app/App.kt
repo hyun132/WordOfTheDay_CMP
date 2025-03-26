@@ -98,8 +98,6 @@ fun App() {
                     }
 
                     composable<Routes.Bookmark> {
-                        Text(text = "Bookmark")
-
                         val viewModel = koinViewModel<BookmarkViewModel>()
                         BookMarkListScreenRoot(
                             viewModel = viewModel,

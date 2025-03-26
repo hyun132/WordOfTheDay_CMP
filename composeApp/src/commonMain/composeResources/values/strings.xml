@@ -4,6 +4,9 @@
     <string name="get_new_word">I want to change today's word</string>
     <string name="learning_start">Learning Start</string>
 
+    <string name="bookmark_title">Bookmark List</string>
+    <string name="bookmark_subtitle">Review the sentences you saved while studying.</string>
+
     <string name="error_disk_full">Oops, it seems like your disk is full.</string>
     <string name="error_unknown">Oops, something went wrong.</string>
     <string name="error_request_timeout">The request timed out.</string>
