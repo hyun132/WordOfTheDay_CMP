@@ -1,5 +1,6 @@
 package org.hyun.projectkmp.di
 
+import com.russhwolf.settings.Settings
 import org.hyun.projectkmp.core.data.HttpClientFactory
 import org.hyun.projectkmp.word.data.network.KtorRemoteWordDataSource
 import org.hyun.projectkmp.word.data.network.RemoteWordDataSource
