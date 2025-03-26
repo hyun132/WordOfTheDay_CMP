@@ -5,6 +5,7 @@ import org.hyun.projectkmp.core.data.HttpClientFactory
 import org.hyun.projectkmp.word.data.network.KtorRemoteWordDataSource
 import org.hyun.projectkmp.word.data.network.RemoteWordDataSource
 import org.hyun.projectkmp.word.data.repository.DefaultWordRepository
+import org.hyun.projectkmp.word.data.repository.LocalRepository
 import org.hyun.projectkmp.word.domain.repository.WordRepository
 import org.hyun.projectkmp.word.presentation.WordHomeViewModel
 import org.hyun.projectkmp.word.presentation.bookmark.BookmarkViewModel
@@ -21,6 +22,8 @@ val sharedModule = module {
     single { HttpClientFactory.create(get()) }
     singleOf(::KtorRemoteWordDataSource).bind<RemoteWordDataSource>()
     singleOf(::DefaultWordRepository).bind<WordRepository>()
+
+    single { Settings() }
 
     viewModelOf(::WordHomeViewModel)
     viewModelOf(::LearningViewModel)

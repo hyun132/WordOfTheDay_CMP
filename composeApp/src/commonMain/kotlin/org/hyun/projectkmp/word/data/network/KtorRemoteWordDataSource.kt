@@ -1,6 +1,7 @@
 package org.hyun.projectkmp.word.data.network
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -50,7 +51,7 @@ class KtorRemoteWordDataSource(
         }
     }
 
-    override suspend fun saveBookMark(query: BookMarkRequestQuery): Result<SentenceDto, DataError.Remote> {
+    override suspend fun saveBookmark(query: BookMarkRequestQuery): Result<SentenceDto, DataError.Remote> {
         return safeCall {
             httpClient.post("$BASE_URL/me/bookmark"){
                 contentType(ContentType.Application.Json)
@@ -59,7 +60,16 @@ class KtorRemoteWordDataSource(
         }
     }
 
-    override suspend fun getBookMarks(query: BookMarksRequestQuery): Result<SentencesDto, DataError.Remote> {
+    override suspend fun deleteBookmark(query: BookMarkRequestQuery): Result<SentenceDto, DataError.Remote> {
+        return safeCall {
+            httpClient.delete("$BASE_URL/me/bookmark"){
+                contentType(ContentType.Application.Json)
+                setBody(query)
+            }
+        }
+    }
+
+    override suspend fun getBookmarks(query: BookMarksRequestQuery): Result<SentencesDto, DataError.Remote> {
         return safeCall {
             httpClient.get("$BASE_URL/me/bookmark")
         }

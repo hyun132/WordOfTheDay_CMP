@@ -24,11 +24,15 @@ interface RemoteWordDataSource {
         query: SentencesRequestQuery
     ): Result<SentencesDto, DataError.Remote>
 
-    suspend fun saveBookMark(
+    suspend fun saveBookmark(
         query: BookMarkRequestQuery
     ): Result<SentenceDto, DataError.Remote>
 
-    suspend fun getBookMarks(
+    suspend fun deleteBookmark(
+        query: BookMarkRequestQuery
+    ): Result<SentenceDto, DataError.Remote>
+
+    suspend fun getBookmarks(
         query: BookMarksRequestQuery
     ): Result<SentencesDto, DataError.Remote>
 }

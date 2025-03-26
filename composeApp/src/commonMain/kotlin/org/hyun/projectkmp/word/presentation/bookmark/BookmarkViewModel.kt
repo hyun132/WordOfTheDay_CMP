@@ -1,9 +1,8 @@
 package org.hyun.projectkmp.word.presentation.bookmark
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
+import com.russhwolf.settings.Settings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -11,18 +10,17 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.hyun.projectkmp.app.Routes
 import org.hyun.projectkmp.core.domain.onError
 import org.hyun.projectkmp.core.domain.onSuccess
 import org.hyun.projectkmp.core.presentation.toUiText
-import org.hyun.projectkmp.word.domain.Difficulty
 import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.BookMarksRequestQuery
-import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
 import org.hyun.projectkmp.word.domain.repository.WordRepository
+import org.koin.compose.koinInject
 
 class BookmarkViewModel(
     private val repository: WordRepository,
+    private val setting : Settings
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BookmarkState())
@@ -46,7 +44,30 @@ class BookmarkViewModel(
     }
 
     private fun bookMark(sentence: String) {
-        println("$sentence is clicked")
+        viewModelScope.launch {
+            repository.deleteBookMark(
+                BookMarkRequestQuery(
+                    sentence = sentence
+                )
+            )
+                .onSuccess { result ->
+                    _state.update {
+                        val list = it.sentences.filter { it != result.sentence }
+                        it.copy(
+                            sentences = list,
+                            isLoading = false
+                        )
+                    }
+                }
+                .onError { e ->
+                    _state.update {
+                        it.copy(
+                            errorMessage = e.toUiText(),
+                            isLoading = false
+                        )
+                    }
+                }
+        }
     }
 
     private fun getBookmarks() {
@@ -71,7 +92,6 @@ class BookmarkViewModel(
                             isLoading = false
                         )
                     }
-                    println(e.name)
                 }
         }
     }

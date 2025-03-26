@@ -5,26 +5,29 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.hyun.projectkmp.core.domain.onError
 import org.hyun.projectkmp.core.domain.onSuccess
 import org.hyun.projectkmp.core.presentation.toUiText
+import org.hyun.projectkmp.word.data.repository.LocalRepository
 import org.hyun.projectkmp.word.domain.Difficulty
 import org.hyun.projectkmp.word.domain.model.WordRequestQuery
 import org.hyun.projectkmp.word.domain.repository.WordRepository
 
 class WordHomeViewModel(
-    private val wordRepository: WordRepository
+    private val wordRepository: WordRepository,
+    private val localRepository: LocalRepository
 ) : ViewModel() {
-
-    init {
-        getTodaysWord()
-    }
 
     private val _state = MutableStateFlow(WordHomeState())
     val state: StateFlow<WordHomeState> = _state
+        .onStart {
+            getLocalData()
+            getTodaysWord()
+        }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
@@ -41,14 +44,22 @@ class WordHomeViewModel(
         }
     }
 
-    private fun getTodaysWord(
-        subject: String = "business",
-        difficulty: Difficulty = Difficulty.BEGINNER
-    ) = viewModelScope.launch {
-        wordRepository.getNewWord(
-            requestQuery = WordRequestQuery(
+    private fun getLocalData() = viewModelScope.launch {
+        val subject = localRepository.getSubject() ?: "business"
+        val difficulty = localRepository.getDifficulty()?.let { Difficulty.valueOf(it) } ?: Difficulty.BEGINNER
+        _state.update {
+            it.copy(
                 subject = subject,
                 difficulty = difficulty
+            )
+        }
+    }
+
+    private fun getTodaysWord() = viewModelScope.launch {
+        wordRepository.getTodaysWord(
+            requestQuery = WordRequestQuery(
+                subject = state.value.subject,
+                difficulty = state.value.difficulty
             )
         )
             .onSuccess { word ->
@@ -71,14 +82,11 @@ class WordHomeViewModel(
             }
     }
 
-    private fun getNewWord(
-        subject: String = "work",
-        difficulty: Difficulty = Difficulty.BEGINNER
-    ) = viewModelScope.launch {
+    private fun getNewWord() = viewModelScope.launch {
         wordRepository.getNewWord(
             requestQuery = WordRequestQuery(
-                subject = subject,
-                difficulty = difficulty
+                subject = state.value.subject,
+                difficulty = state.value.difficulty
             )
         )
             .onSuccess { word ->

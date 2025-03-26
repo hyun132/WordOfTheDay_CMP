@@ -26,6 +26,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.russhwolf.settings.Settings
 import org.hyun.projectkmp.core.presentation.DeepPurple
 import org.hyun.projectkmp.core.presentation.LightGray
 import org.hyun.projectkmp.word.presentation.WordHomeScreenRoot
@@ -35,6 +36,7 @@ import org.hyun.projectkmp.word.presentation.bookmark.BookmarkViewModel
 import org.hyun.projectkmp.word.presentation.learning.LearningScreenRoot
 import org.hyun.projectkmp.word.presentation.learning.LearningViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

@@ -6,6 +6,7 @@ import org.hyun.projectkmp.core.domain.map
 import org.hyun.projectkmp.word.data.mapper.toSentence
 import org.hyun.projectkmp.word.data.mapper.toWord
 import org.hyun.projectkmp.word.data.network.RemoteWordDataSource
+import org.hyun.projectkmp.word.domain.Sentence
 import org.hyun.projectkmp.word.domain.Sentences
 import org.hyun.projectkmp.word.domain.Word
 import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
@@ -35,11 +36,15 @@ class DefaultWordRepository(
     }
 
     override suspend fun saveBookMark(requestQuery: BookMarkRequestQuery): Result<String, DataError.Remote> {
-        return remoteWordDataSource.saveBookMark(requestQuery).map { it.sentence ?: "" }
+        return remoteWordDataSource.saveBookmark(requestQuery).map { it.sentence ?: "" }
     }
 
     override suspend fun getBookMarks(requestQuery: BookMarksRequestQuery): Result<Sentences, DataError.Remote> {
-        return remoteWordDataSource.getBookMarks(requestQuery)
+        return remoteWordDataSource.getBookmarks(requestQuery)
             .map { Sentences(sentences = it.sentences?.map { it.toSentence() } ?: emptyList()) }
+    }
+
+    override suspend fun deleteBookMark(requestQuery: BookMarkRequestQuery): Result<Sentence, DataError.Remote> {
+        return remoteWordDataSource.deleteBookmark(requestQuery).map { it.toSentence() }
     }
 }
