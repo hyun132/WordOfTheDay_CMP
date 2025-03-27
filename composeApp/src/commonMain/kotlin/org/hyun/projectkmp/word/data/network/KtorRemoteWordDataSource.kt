@@ -74,4 +74,10 @@ class KtorRemoteWordDataSource(
             httpClient.get("$BASE_URL/me/bookmark")
         }
     }
+
+    override suspend fun getLearnedWordCount(): Result<Long, DataError.Remote> {
+        return safeCall {
+            httpClient.get("$BASE_URL/me/learning-history/count")
+        }
+    }
 }

@@ -10,6 +10,7 @@ import org.hyun.projectkmp.word.domain.repository.WordRepository
 import org.hyun.projectkmp.word.presentation.WordHomeViewModel
 import org.hyun.projectkmp.word.presentation.bookmark.BookmarkViewModel
 import org.hyun.projectkmp.word.presentation.learning.LearningViewModel
+import org.hyun.projectkmp.word.presentation.profile.ProfileViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -28,4 +29,5 @@ val sharedModule = module {
     viewModelOf(::WordHomeViewModel)
     viewModelOf(::LearningViewModel)
     viewModelOf(::BookmarkViewModel)
+    viewModelOf(::ProfileViewModel)
 }

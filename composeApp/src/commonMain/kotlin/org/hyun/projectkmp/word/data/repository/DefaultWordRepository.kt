@@ -47,4 +47,8 @@ class DefaultWordRepository(
     override suspend fun deleteBookMark(requestQuery: BookMarkRequestQuery): Result<Sentence, DataError.Remote> {
         return remoteWordDataSource.deleteBookmark(requestQuery).map { it.toSentence() }
     }
+
+    override suspend fun getLearnedWordCount(): Result<Long, DataError.Remote> {
+        return remoteWordDataSource.getLearnedWordCount()
+    }
 }

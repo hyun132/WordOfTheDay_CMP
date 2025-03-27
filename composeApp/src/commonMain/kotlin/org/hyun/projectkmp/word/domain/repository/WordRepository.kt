@@ -17,4 +17,5 @@ interface WordRepository {
     suspend fun saveBookMark(requestQuery: BookMarkRequestQuery):Result<String,DataError.Remote>
     suspend fun deleteBookMark(requestQuery: BookMarkRequestQuery):Result<Sentence,DataError.Remote>
     suspend fun getBookMarks(requestQuery: BookMarksRequestQuery):Result<Sentences,DataError.Remote>
+    suspend fun getLearnedWordCount():Result<Long,DataError.Remote>
 }

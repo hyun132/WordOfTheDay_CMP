@@ -35,6 +35,8 @@ import org.hyun.projectkmp.word.presentation.bookmark.BookMarkListScreenRoot
 import org.hyun.projectkmp.word.presentation.bookmark.BookmarkViewModel
 import org.hyun.projectkmp.word.presentation.learning.LearningScreenRoot
 import org.hyun.projectkmp.word.presentation.learning.LearningViewModel
+import org.hyun.projectkmp.word.presentation.profile.ProfileScreenRoot
+import org.hyun.projectkmp.word.presentation.profile.ProfileViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -110,7 +112,13 @@ fun App() {
                     }
 
                     composable<Routes.Profile> {
-                        Text(text = "Profile")
+                        val viewModel = koinViewModel<ProfileViewModel>()
+                        ProfileScreenRoot(
+                            viewModel = viewModel,
+                            onBackClick = {
+                                navController.navigateUp()
+                            }
+                        )
                     }
                 }
             }

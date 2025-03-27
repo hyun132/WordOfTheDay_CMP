@@ -35,4 +35,7 @@ interface RemoteWordDataSource {
     suspend fun getBookmarks(
         query: BookMarksRequestQuery
     ): Result<SentencesDto, DataError.Remote>
+
+    suspend fun getLearnedWordCount():Result<Long,DataError.Remote>
+
 }
