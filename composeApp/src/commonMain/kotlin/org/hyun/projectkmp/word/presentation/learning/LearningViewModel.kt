@@ -46,6 +46,19 @@ class LearningViewModel(
                 bookMark(action.sentence)
             }
 
+            is LearningAction.OnNext -> {
+                println("on next from it.progress")
+                _state.update {
+                    it.copy(
+                        progress = if (it.sentences.size > it.progress) it.progress + 1 else it.progress
+                    )
+                }
+            }
+
+            is LearningAction.OnDoneClick -> {
+                println("update Word Learning state")
+            }
+
             else -> Unit
         }
     }
