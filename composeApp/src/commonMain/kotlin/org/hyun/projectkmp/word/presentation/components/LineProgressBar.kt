@@ -28,22 +28,23 @@ fun LineProgressBar(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     )
     {
+        val progress = current + 1
         Row(
             modifier = Modifier
-                .weight(current / total.toFloat()),
+                .weight(progress / total.toFloat()),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            repeat(current) {
+            repeat(progress) {
                 Dot(DeepPurple)
             }
         }
-        if (current<total) {
+        if (progress < total) {
             Row(
                 modifier = Modifier
-                    .weight(1 - current / total.toFloat()),
+                    .weight(1 - progress / total.toFloat()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                repeat(total - current) {
+                repeat(total - progress) {
                     Dot(LightGray)
                 }
             }

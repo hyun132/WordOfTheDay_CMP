@@ -7,6 +7,6 @@ data class LeaningState(
     val sentences: List<String> = emptyList(),
     val isLoading: Boolean = true,
     val errorMessage: UiText? = null,
-    val progress: Int = 1,
+    val progress: Int = 0,
     val totalSize : Int = 5
 )

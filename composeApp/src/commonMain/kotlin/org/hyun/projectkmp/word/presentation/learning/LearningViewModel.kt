@@ -46,11 +46,20 @@ class LearningViewModel(
                 bookMark(action.sentence)
             }
 
+            is LearningAction.OnScroll -> {
+                println("on next from it.progress")
+                _state.update {
+                    it.copy(
+                        progress = action.skipTo
+                    )
+                }
+            }
+
             is LearningAction.OnNext -> {
                 println("on next from it.progress")
                 _state.update {
                     it.copy(
-                        progress = if (it.sentences.size > it.progress) it.progress + 1 else it.progress
+                        progress = if (it.sentences.size - 1 > it.progress) it.progress + 1 else it.progress
                     )
                 }
             }
