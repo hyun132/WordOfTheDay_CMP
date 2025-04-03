@@ -5,6 +5,7 @@ import org.hyun.projectkmp.core.presentation.UiText
 data class LeaningState(
     val word: String = "",
     val sentences: List<String> = emptyList(),
+    val userInputs: List<String> = emptyList(),
     val isLoading: Boolean = true,
     val errorMessage: UiText? = null,
     val progress: Int = 0,

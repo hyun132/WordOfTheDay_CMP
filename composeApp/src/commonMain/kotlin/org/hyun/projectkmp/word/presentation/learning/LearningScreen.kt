@@ -1,6 +1,8 @@
 package org.hyun.projectkmp.word.presentation.learning
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -29,6 +32,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -112,7 +121,6 @@ fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
                     .fillMaxWidth()
                     .weight(1f)
             ) { page ->
-                var text by remember { mutableStateOf("") }
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -157,13 +165,12 @@ fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
                             .fillMaxWidth(),
                         colors = CardDefaults.cardColors(containerColor = LightPurple)
                     ) {
-                        BasicTextField(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                            value = text,
-                            onValueChange = { text = it }
+                        UnderlineTextField(
+                            text = state.userInputs[state.progress],
+                            onTextChange = {
+                                onAction(LearningAction.OnTextChange(it))
+                            },
+                            modifier = Modifier
                         )
                     }
 
@@ -181,5 +188,65 @@ fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun UnderlineTextField(
+    text: String,
+    modifier: Modifier,
+    onTextChange: (String) -> Unit
+) {
+    var lineCount by remember { mutableStateOf(0) }
+
+    Box(
+        modifier = modifier
+            .background(LightPurple)
+            .padding(12.dp)
+            .clip(RoundedCornerShape(12.dp))
+    ) {
+        BasicTextField(
+            value = text,
+            onValueChange = {
+                onTextChange(it)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .drawBehind {
+                    val lineHeight = 28.sp.toPx()
+                    for (i in 0 until lineCount) {
+                        val y = lineHeight * (i + 1)
+                        drawLine(
+                            color = Color.White,
+                            start = Offset(x = 0f, y = y),
+                            end = Offset(x = size.width, y = y),
+                            strokeWidth = 4.dp.toPx()
+                        )
+                    }
+                },
+            onTextLayout = {
+                lineCount = it.lineCount
+            },
+            cursorBrush = SolidColor(Color.Black),
+            decorationBox = { innerTextField ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp)
+                ) {
+                    if (text.isEmpty()) {
+                        Text(
+                            text = "enter here",
+                            color = Color.Gray
+                        )
+                    }
+                    innerTextField()
+                }
+            },
+            textStyle = TextStyle(
+                fontSize = 16.sp,
+                lineHeight = 28.sp
+            )
+        )
     }
 }

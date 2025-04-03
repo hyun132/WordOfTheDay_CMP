@@ -64,6 +64,16 @@ class LearningViewModel(
                 }
             }
 
+            is LearningAction.OnTextChange -> {
+                _state.update {
+                    val inputs = it.userInputs.toMutableList()
+                    inputs[it.progress] =  action.text
+                    it.copy(
+                        userInputs = inputs
+                    )
+                }
+            }
+
             is LearningAction.OnDoneClick -> {
                 println("update Word Learning state")
             }
@@ -103,8 +113,11 @@ class LearningViewModel(
             )
                 .onSuccess { result ->
                     _state.update {
+                        val list = mutableListOf<String>()
+                        repeat(result.size){list.add("")}
                         it.copy(
                             sentences = result,
+                            userInputs = list,
                             isLoading = false
                         )
                     }
