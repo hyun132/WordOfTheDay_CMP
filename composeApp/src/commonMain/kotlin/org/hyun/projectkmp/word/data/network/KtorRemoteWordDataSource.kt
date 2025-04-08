@@ -14,6 +14,8 @@ import org.hyun.projectkmp.core.domain.Result
 import org.hyun.projectkmp.word.data.dto.SentenceDto
 import org.hyun.projectkmp.word.data.dto.SentencesDto
 import org.hyun.projectkmp.word.data.dto.WordDto
+import org.hyun.projectkmp.word.domain.model.AnswerCheckRequest
+import org.hyun.projectkmp.word.domain.model.AnswerResult
 import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.BookMarksRequestQuery
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
@@ -78,6 +80,16 @@ class KtorRemoteWordDataSource(
     override suspend fun getLearnedWordCount(): Result<Long, DataError.Remote> {
         return safeCall {
             httpClient.get("$BASE_URL/me/learning-history/count")
+        }
+    }
+
+    override suspend fun checkAnswer(request: AnswerCheckRequest): Result<AnswerResult, DataError.Remote> {
+        return safeCall {
+            println("checkAnswer")
+            httpClient.post("$BASE_URL/learning/answer"){
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
         }
     }
 }

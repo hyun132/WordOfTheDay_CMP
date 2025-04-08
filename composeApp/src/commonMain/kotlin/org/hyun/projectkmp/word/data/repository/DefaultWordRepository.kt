@@ -9,6 +9,8 @@ import org.hyun.projectkmp.word.data.network.RemoteWordDataSource
 import org.hyun.projectkmp.word.domain.Sentence
 import org.hyun.projectkmp.word.domain.Sentences
 import org.hyun.projectkmp.word.domain.Word
+import org.hyun.projectkmp.word.domain.model.AnswerCheckRequest
+import org.hyun.projectkmp.word.domain.model.AnswerResult
 import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.BookMarksRequestQuery
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
@@ -50,5 +52,9 @@ class DefaultWordRepository(
 
     override suspend fun getLearnedWordCount(): Result<Long, DataError.Remote> {
         return remoteWordDataSource.getLearnedWordCount()
+    }
+
+    override suspend fun checkAnswer(requestQuery: AnswerCheckRequest): Result<AnswerResult, DataError.Remote> {
+        return remoteWordDataSource.checkAnswer(requestQuery)
     }
 }

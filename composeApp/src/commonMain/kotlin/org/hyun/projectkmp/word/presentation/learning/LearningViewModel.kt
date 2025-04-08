@@ -16,6 +16,8 @@ import org.hyun.projectkmp.core.domain.onError
 import org.hyun.projectkmp.core.domain.onSuccess
 import org.hyun.projectkmp.core.presentation.toUiText
 import org.hyun.projectkmp.word.domain.Difficulty
+import org.hyun.projectkmp.word.domain.Mode
+import org.hyun.projectkmp.word.domain.model.AnswerCheckRequest
 import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
 import org.hyun.projectkmp.word.domain.repository.WordRepository
@@ -47,7 +49,6 @@ class LearningViewModel(
             }
 
             is LearningAction.OnScroll -> {
-                println("on next from it.progress")
                 _state.update {
                     it.copy(
                         progress = action.skipTo
@@ -56,22 +57,33 @@ class LearningViewModel(
             }
 
             is LearningAction.OnNext -> {
-                println("on next from it.progress")
                 _state.update {
                     it.copy(
-                        progress = if (it.sentences.size - 1 > it.progress) it.progress + 1 else it.progress
+                        progress = if (it.sentenceItems.size - 1 > it.progress) it.progress + 1 else it.progress
                     )
                 }
             }
 
             is LearningAction.OnTextChange -> {
                 _state.update {
-                    val inputs = it.userInputs.toMutableList()
-                    inputs[it.progress] =  action.text
+                    val inputs = it.sentenceItems.toMutableList().apply {
+                        this[it.progress] = this[it.progress].copy(userInput = action.text)
+                    }
                     it.copy(
-                        userInputs = inputs
+                        sentenceItems = inputs
                     )
                 }
+            }
+
+            is LearningAction.OnSubmit -> {
+                val progress = state.value.progress
+                val item = state.value.sentenceItems[progress]
+                submitAnswer(
+                    progress = progress,
+                    mode = state.value.mode,
+                    origin = item.sentence,
+                    item.userInput
+                )
             }
 
             is LearningAction.OnDoneClick -> {
@@ -113,11 +125,9 @@ class LearningViewModel(
             )
                 .onSuccess { result ->
                     _state.update {
-                        val list = mutableListOf<String>()
-                        repeat(result.size){list.add("")}
+                        val list = result.map { LearningSentenceItem(sentence = it) }
                         it.copy(
-                            sentences = result,
-                            userInputs = list,
+                            sentenceItems = list,
                             isLoading = false
                         )
                     }
@@ -130,6 +140,37 @@ class LearningViewModel(
                         )
                     }
                     println(e.name)
+                }
+        }
+    }
+
+    fun submitAnswer(progress: Int, mode: Mode, origin: String, userInput: String) {
+        viewModelScope.launch {
+            repository.checkAnswer(
+                AnswerCheckRequest(
+                    origin = origin,
+                    mode = mode,
+                    userAnswer = userInput
+                )
+            )
+                .onSuccess { result ->
+                    _state.update {
+                        val updatedItems = it.sentenceItems.toMutableList().apply {
+                            this[progress] = this[progress].copy(isCorrect = result.isCorrect)
+                        }
+                        it.copy(
+                            sentenceItems = updatedItems,
+                            isLoading = false
+                        )
+                    }
+                }
+                .onError { e ->
+                    _state.update {
+                        it.copy(
+                            errorMessage = e.toUiText(),
+                            isLoading = false
+                        )
+                    }
                 }
         }
     }

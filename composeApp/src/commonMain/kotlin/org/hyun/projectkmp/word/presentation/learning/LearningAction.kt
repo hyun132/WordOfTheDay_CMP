@@ -7,4 +7,5 @@ sealed interface LearningAction {
     data object OnBackClick : LearningAction
     data object OnNext : LearningAction
     data object OnDoneClick : LearningAction
+    data object OnSubmit : LearningAction
 }

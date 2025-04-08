@@ -6,6 +6,8 @@ import org.hyun.projectkmp.word.domain.Sentence
 import org.hyun.projectkmp.word.domain.Sentences
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
 import org.hyun.projectkmp.word.domain.Word
+import org.hyun.projectkmp.word.domain.model.AnswerCheckRequest
+import org.hyun.projectkmp.word.domain.model.AnswerResult
 import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.BookMarksRequestQuery
 import org.hyun.projectkmp.word.domain.model.WordRequestQuery
@@ -18,4 +20,5 @@ interface WordRepository {
     suspend fun deleteBookMark(requestQuery: BookMarkRequestQuery):Result<Sentence,DataError.Remote>
     suspend fun getBookMarks(requestQuery: BookMarksRequestQuery):Result<Sentences,DataError.Remote>
     suspend fun getLearnedWordCount():Result<Long,DataError.Remote>
+    suspend fun checkAnswer(requestQuery: AnswerCheckRequest):Result<AnswerResult,DataError.Remote>
 }

@@ -15,6 +15,8 @@ import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
@@ -37,7 +39,15 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -115,6 +125,7 @@ fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
                     }
             }
 
+            if(state.sentenceItems.isNotEmpty())
             VerticalPager(
                 state = pagerState,
                 modifier = Modifier
@@ -141,12 +152,12 @@ fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
                                 contentDescription = "bookmark",
                                 modifier = Modifier
                                     .clickable {
-                                        onAction(LearningAction.OnBookMarkClick(state.sentences[page]))
+                                        onAction(LearningAction.OnBookMarkClick(state.sentenceItems[page].sentence))
                                     }.align(Alignment.End),
                             )
 
                             Text(
-                                text = state.sentences[page],
+                                text = state.sentenceItems[page].sentence,
                                 modifier = Modifier
                                     .fillMaxWidth(),
                                 textAlign = TextAlign.Center,
@@ -165,15 +176,27 @@ fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
                             .fillMaxWidth(),
                         colors = CardDefaults.cardColors(containerColor = LightPurple)
                     ) {
-                        UnderlineTextField(
-                            text = state.userInputs[state.progress],
-                            onTextChange = {
-                                onAction(LearningAction.OnTextChange(it))
-                            },
-                            modifier = Modifier
-                        )
+                            UnderlineTextField(
+                                text = state.sentenceItems[state.progress].userInput,
+                                onTextChange = {
+                                    onAction(LearningAction.OnTextChange(it))
+                                },
+                                modifier = Modifier,
+                                onAction = {
+                                    onAction(LearningAction.OnSubmit)
+                                },
+                            )
                     }
-
+                    Text(
+                        "submit",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                println("submit clicked")
+                                onAction(LearningAction.OnSubmit)
+                            },
+                        textAlign = TextAlign.Center
+                    )
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
@@ -195,7 +218,8 @@ fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
 fun UnderlineTextField(
     text: String,
     modifier: Modifier,
-    onTextChange: (String) -> Unit
+    onTextChange: (String) -> Unit,
+    onAction: () -> Unit
 ) {
     var lineCount by remember { mutableStateOf(0) }
 
@@ -227,6 +251,14 @@ fun UnderlineTextField(
             onTextLayout = {
                 lineCount = it.lineCount
             },
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    onAction()
+                }
+            ),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done  // 키보드의 엔터 버튼을 'Done'으로 바꿔줌
+            ),
             cursorBrush = SolidColor(Color.Black),
             decorationBox = { innerTextField ->
                 Box(
