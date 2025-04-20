@@ -11,4 +11,5 @@ data class LeaningState(
     val progress: Int = 0,
     val totalSize: Int = 5,
     val mode: Mode = Mode.TEXT,
+    val showDialog:Boolean = false,
 )

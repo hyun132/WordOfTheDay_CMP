@@ -9,6 +9,8 @@ import org.hyun.projectkmp.word.domain.model.AnswerCheckRequest
 import org.hyun.projectkmp.word.domain.model.AnswerResult
 import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.BookMarksRequestQuery
+import org.hyun.projectkmp.word.domain.model.LearningCompleteRequest
+import org.hyun.projectkmp.word.domain.model.LearningCompleteResponse
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
 import org.hyun.projectkmp.word.domain.model.WordRequestQuery
 
@@ -43,4 +45,8 @@ interface RemoteWordDataSource {
     suspend fun checkAnswer(
         request: AnswerCheckRequest
     ): Result<AnswerResult, DataError.Remote>
+
+    suspend fun saveLearningHistory(
+        request: LearningCompleteRequest
+    ): Result<LearningCompleteResponse, DataError.Remote>
 }

@@ -18,6 +18,8 @@ import org.hyun.projectkmp.word.domain.model.AnswerCheckRequest
 import org.hyun.projectkmp.word.domain.model.AnswerResult
 import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.BookMarksRequestQuery
+import org.hyun.projectkmp.word.domain.model.LearningCompleteRequest
+import org.hyun.projectkmp.word.domain.model.LearningCompleteResponse
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
 import org.hyun.projectkmp.word.domain.model.WordRequestQuery
 
@@ -87,6 +89,15 @@ class KtorRemoteWordDataSource(
         return safeCall {
             println("checkAnswer")
             httpClient.post("$BASE_URL/learning/answer"){
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+        }
+    }
+
+    override suspend fun saveLearningHistory(request: LearningCompleteRequest): Result<LearningCompleteResponse, DataError.Remote> {
+        return safeCall {
+            httpClient.post("$BASE_URL/me/learning-history"){
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }

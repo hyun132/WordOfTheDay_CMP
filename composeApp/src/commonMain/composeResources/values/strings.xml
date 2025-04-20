@@ -15,4 +15,9 @@
     <string name="error_serialization">Couldn't parse data.</string>
 
     <string name="learned_word_count">Number of words learned</string>
+
+    <string name="learning_completed">Done</string>
+    <string name="close_dialog">close</string>
+    <string name="tab_to_next">Tab to next</string>
+    <string name="submit">submit</string>
 </resources>

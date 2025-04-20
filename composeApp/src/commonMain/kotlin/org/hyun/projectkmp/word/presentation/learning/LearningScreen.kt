@@ -1,7 +1,10 @@
 package org.hyun.projectkmp.word.presentation.learning
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,14 +14,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -28,38 +32,33 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.key.type
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.hyun.projectkmp.core.presentation.DeepPurple
 import org.hyun.projectkmp.core.presentation.LightGray
 import org.hyun.projectkmp.core.presentation.LightPurple
+import org.hyun.projectkmp.core.presentation.MediumPurple
 import org.hyun.projectkmp.word.presentation.components.LineProgressBar
+import org.hyun.projectkmp.word.presentation.components.UnderlineTextField
+import org.jetbrains.compose.resources.imageResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import wordoftheday.composeapp.generated.resources.Res
 import wordoftheday.composeapp.generated.resources.back
+import wordoftheday.composeapp.generated.resources.celebration
+import wordoftheday.composeapp.generated.resources.close_dialog
+import wordoftheday.composeapp.generated.resources.learning_completed
+import wordoftheday.composeapp.generated.resources.submit
+import wordoftheday.composeapp.generated.resources.tab_to_next
 
 @Composable
 fun LearningScreenRoot(
@@ -88,7 +87,8 @@ fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 painter = painterResource(Res.drawable.back),
@@ -108,7 +108,13 @@ fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
         }
         LineProgressBar(state.progress, state.totalSize)
         if (state.isLoading) {
-            CircularProgressIndicator()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
         } else {
             val pagerState = rememberPagerState(pageCount = { state.totalSize })
             LaunchedEffect(state.progress) {
@@ -125,160 +131,184 @@ fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
                     }
             }
 
-            if(state.sentenceItems.isNotEmpty())
-            VerticalPager(
-                state = pagerState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) { page ->
-                Column(
+            if (state.sentenceItems.isNotEmpty())
+                VerticalPager(
+                    state = pagerState,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    Card(
+                        .fillMaxWidth()
+                        .weight(1f)
+                ) { page ->
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = LightGray)
+                            .fillMaxSize()
+                            .padding(16.dp)
                     ) {
-                        Column(
+                        Card(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 16.dp, bottom = 40.dp, start = 24.dp, end = 24.dp)
+                                .fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = LightGray)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.FavoriteBorder,
-                                contentDescription = "bookmark",
+                            Column(
                                 modifier = Modifier
-                                    .clickable {
-                                        onAction(LearningAction.OnBookMarkClick(state.sentenceItems[page].sentence))
-                                    }.align(Alignment.End),
-                            )
+                                    .fillMaxWidth()
+                                    .padding(
+                                        top = 16.dp,
+                                        bottom = 40.dp,
+                                        start = 24.dp,
+                                        end = 24.dp
+                                    )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.FavoriteBorder,
+                                    contentDescription = "bookmark",
+                                    modifier = Modifier
+                                        .clickable {
+                                            onAction(LearningAction.OnBookMarkClick(state.sentenceItems[page].sentence))
+                                        }.align(Alignment.End),
+                                )
 
-                            Text(
-                                text = state.sentenceItems[page].sentence,
+                                Text(
+                                    text = state.sentenceItems[page].sentence,
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontSize = 26.sp,
+                                    color = DeepPurple,
+                                    lineHeight = 30.sp
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        if (state.sentenceItems[page].isCorrect == true) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = "check",
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally),
+                                tint = MediumPurple
+                            )
+                        } else {
+                            Card(
                                 modifier = Modifier
                                     .fillMaxWidth(),
-                                textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.labelLarge,
-                                fontSize = 26.sp,
-                                color = DeepPurple,
-                                lineHeight = 30.sp
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = LightPurple)
-                    ) {
-                            UnderlineTextField(
-                                text = state.sentenceItems[state.progress].userInput,
-                                onTextChange = {
-                                    onAction(LearningAction.OnTextChange(it))
-                                },
-                                modifier = Modifier,
-                                onAction = {
+                                colors = CardDefaults.cardColors(containerColor = LightPurple)
+                            ) {
+                                UnderlineTextField(
+                                    text = state.sentenceItems[state.progress].userInput,
+                                    onTextChange = {
+                                        onAction(LearningAction.OnTextChange(it))
+                                    },
+                                    modifier = Modifier,
+                                    onAction = {
+                                        onAction(LearningAction.OnSubmit)
+                                    },
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedButton(
+                                onClick = {
                                     onAction(LearningAction.OnSubmit)
                                 },
-                            )
-                    }
-                    Text(
-                        "submit",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                println("submit clicked")
-                                onAction(LearningAction.OnSubmit)
-                            },
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
+                                border = BorderStroke(width = 2.dp, color = LightGray),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
+                            ) {
+                                Text(
+                                    text = stringResource(Res.string.submit),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                    Text(
-                        "tab to Next",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                onAction(LearningAction.OnNext)
-                            },
-                        textAlign = TextAlign.Center
-                    )
+                        if (state.progress != state.totalSize - 1) {
+                            Text(
+                                stringResource(Res.string.tab_to_next),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        onAction(LearningAction.OnNext)
+                                    },
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
+                        if (state.showDialog) {
+                            DoneDialog {
+                                onAction(LearningAction.OnBackClick)
+                            }
+                        }
+                    }
                 }
-            }
         }
     }
 }
 
 @Composable
-fun UnderlineTextField(
-    text: String,
-    modifier: Modifier,
-    onTextChange: (String) -> Unit,
-    onAction: () -> Unit
+fun DoneDialog(
+    onDismiss: () -> Unit
 ) {
-    var lineCount by remember { mutableStateOf(0) }
-
-    Box(
-        modifier = modifier
-            .background(LightPurple)
-            .padding(12.dp)
-            .clip(RoundedCornerShape(12.dp))
-    ) {
-        BasicTextField(
-            value = text,
-            onValueChange = {
-                onTextChange(it)
-            },
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .drawBehind {
-                    val lineHeight = 28.sp.toPx()
-                    for (i in 0 until lineCount) {
-                        val y = lineHeight * (i + 1)
-                        drawLine(
-                            color = Color.White,
-                            start = Offset(x = 0f, y = y),
-                            end = Offset(x = size.width, y = y),
-                            strokeWidth = 4.dp.toPx()
-                        )
-                    }
-                },
-            onTextLayout = {
-                lineCount = it.lineCount
-            },
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    onAction()
-                }
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done  // 키보드의 엔터 버튼을 'Done'으로 바꿔줌
-            ),
-            cursorBrush = SolidColor(Color.Black),
-            decorationBox = { innerTextField ->
-                Box(
+                .padding(36.dp)
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = LightPurple)
+            ) {
+                Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp)
+                        .padding(32.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    if (text.isEmpty()) {
-                        Text(
-                            text = "enter here",
-                            color = Color.Gray
-                        )
-                    }
-                    innerTextField()
+                    Text(
+                        text = stringResource(Res.string.learning_completed),
+                        textAlign = TextAlign.Center,
+                        style = TextStyle.Default.copy(
+                            color = Color.White,
+                            fontStyle = MaterialTheme.typography.labelLarge.fontStyle,
+                            fontSize = 24.sp
+                        ),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Image(
+                        bitmap = imageResource(Res.drawable.celebration),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .size(48.dp)
+                    )
                 }
-            },
-            textStyle = TextStyle(
-                fontSize = 16.sp,
-                lineHeight = 28.sp
-            )
-        )
+            }
+            Spacer(Modifier.height(8.dp))
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        onDismiss()
+                    }
+            ) {
+                Text(
+                    stringResource(Res.string.close_dialog),
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+                Icon(
+                    imageVector = Icons.Rounded.Close,
+                    contentDescription = "close icon",
+                    tint = Color.White
+                )
+            }
+        }
     }
 }

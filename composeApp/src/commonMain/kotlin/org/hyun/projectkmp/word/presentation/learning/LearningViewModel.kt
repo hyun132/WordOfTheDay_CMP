@@ -19,6 +19,7 @@ import org.hyun.projectkmp.word.domain.Difficulty
 import org.hyun.projectkmp.word.domain.Mode
 import org.hyun.projectkmp.word.domain.model.AnswerCheckRequest
 import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
+import org.hyun.projectkmp.word.domain.model.LearningCompleteRequest
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
 import org.hyun.projectkmp.word.domain.repository.WordRepository
 
@@ -36,7 +37,8 @@ class LearningViewModel(
                 it.copy(word = word)
             }
             getSentences()
-        }.stateIn(
+        }
+        .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = _state.value
@@ -82,12 +84,18 @@ class LearningViewModel(
                     progress = progress,
                     mode = state.value.mode,
                     origin = item.sentence,
-                    item.userInput
+                    userInput = item.userInput
                 )
             }
 
             is LearningAction.OnDoneClick -> {
                 println("update Word Learning state")
+            }
+
+            is LearningAction.OnDismiss -> {
+                _state.update {
+                    it.copy(showDialog = false)
+                }
             }
 
             else -> Unit
@@ -120,7 +128,7 @@ class LearningViewModel(
             repository.getSentences(
                 SentencesRequestQuery(
                     word = word,
-                    difficulty = Difficulty.ADVANCED
+                    difficulty = Difficulty.BEGINNER
                 )
             )
                 .onSuccess { result ->
@@ -154,13 +162,46 @@ class LearningViewModel(
                 )
             )
                 .onSuccess { result ->
+                    var isDone = false
                     _state.update {
                         val updatedItems = it.sentenceItems.toMutableList().apply {
                             this[progress] = this[progress].copy(isCorrect = result.isCorrect)
                         }
+                        isDone = updatedItems.all { it.isCorrect == true }
                         it.copy(
-                            sentenceItems = updatedItems,
+                            sentenceItems = updatedItems
+                        )
+                    }
+                    if (isDone) saveLearningCompleted()
+                }
+                .onError { e ->
+                    _state.update {
+                        it.copy(
+                            errorMessage = e.toUiText(),
                             isLoading = false
+                        )
+                    }
+                }
+        }
+    }
+
+    fun saveLearningCompleted() {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+            repository.saveLearningHistory(
+                LearningCompleteRequest(
+                    word = word
+                )
+            )
+                .onSuccess {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            showDialog = true
                         )
                     }
                 }

@@ -13,6 +13,8 @@ import org.hyun.projectkmp.word.domain.model.AnswerCheckRequest
 import org.hyun.projectkmp.word.domain.model.AnswerResult
 import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.BookMarksRequestQuery
+import org.hyun.projectkmp.word.domain.model.LearningCompleteRequest
+import org.hyun.projectkmp.word.domain.model.LearningCompleteResponse
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
 import org.hyun.projectkmp.word.domain.model.WordRequestQuery
 import org.hyun.projectkmp.word.domain.repository.WordRepository
@@ -56,5 +58,9 @@ class DefaultWordRepository(
 
     override suspend fun checkAnswer(requestQuery: AnswerCheckRequest): Result<AnswerResult, DataError.Remote> {
         return remoteWordDataSource.checkAnswer(requestQuery)
+    }
+
+    override suspend fun saveLearningHistory(learningCompleteRequest: LearningCompleteRequest): Result<LearningCompleteResponse, DataError.Remote> {
+        return remoteWordDataSource.saveLearningHistory(learningCompleteRequest)
     }
 }
