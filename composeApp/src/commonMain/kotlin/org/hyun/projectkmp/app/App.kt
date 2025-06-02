@@ -142,7 +142,7 @@ fun BottomNavBar(navController: NavController, currentRoute: String) {
                     Icon(
                         painter = painterResource(navItem.icon),
                         contentDescription = navItem.label,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
