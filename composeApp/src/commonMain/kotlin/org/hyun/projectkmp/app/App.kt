@@ -34,6 +34,8 @@ import org.hyun.projectkmp.word.presentation.WordHomeScreenRoot
 import org.hyun.projectkmp.word.presentation.WordHomeViewModel
 import org.hyun.projectkmp.word.presentation.bookmark.BookMarkListScreenRoot
 import org.hyun.projectkmp.word.presentation.bookmark.BookmarkViewModel
+import org.hyun.projectkmp.word.presentation.history.HistoryScreenRoot
+import org.hyun.projectkmp.word.presentation.history.HistoryViewModel
 import org.hyun.projectkmp.word.presentation.learning.LearningScreenRoot
 import org.hyun.projectkmp.word.presentation.learning.LearningViewModel
 import org.hyun.projectkmp.word.presentation.profile.ProfileScreenRoot
@@ -99,7 +101,13 @@ fun App() {
                     }
 
                     composable<Routes.History> {
-                        Text(text = "History")
+                        val viewModel = koinViewModel<HistoryViewModel>()
+                        HistoryScreenRoot(
+                            viewModel = viewModel,
+                            onBackClick = {
+                                navController.navigateUp()
+                            }
+                        )
                     }
 
                     composable<Routes.Bookmark> {

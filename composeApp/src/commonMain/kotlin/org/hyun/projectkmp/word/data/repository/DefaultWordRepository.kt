@@ -3,6 +3,7 @@ package org.hyun.projectkmp.word.data.repository
 import org.hyun.projectkmp.core.domain.DataError
 import org.hyun.projectkmp.core.domain.Result
 import org.hyun.projectkmp.core.domain.map
+import org.hyun.projectkmp.word.data.mapper.toLearningHistory
 import org.hyun.projectkmp.word.data.mapper.toSentence
 import org.hyun.projectkmp.word.data.mapper.toWord
 import org.hyun.projectkmp.word.data.network.RemoteWordDataSource
@@ -15,6 +16,8 @@ import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.BookMarksRequestQuery
 import org.hyun.projectkmp.word.domain.model.LearningCompleteRequest
 import org.hyun.projectkmp.word.domain.model.LearningCompleteResponse
+import org.hyun.projectkmp.word.domain.LearningHistories
+import org.hyun.projectkmp.word.domain.model.LearningHistoriesRequest
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
 import org.hyun.projectkmp.word.domain.model.WordRequestQuery
 import org.hyun.projectkmp.word.domain.repository.WordRepository
@@ -62,5 +65,12 @@ class DefaultWordRepository(
 
     override suspend fun saveLearningHistory(learningCompleteRequest: LearningCompleteRequest): Result<LearningCompleteResponse, DataError.Remote> {
         return remoteWordDataSource.saveLearningHistory(learningCompleteRequest)
+    }
+
+    override suspend fun getLearningHistories(learningCompleteRequest: LearningHistoriesRequest): Result<LearningHistories, DataError.Remote> {
+        return remoteWordDataSource.getLearningHistories(learningCompleteRequest).map { response ->
+            val map = response.learningHistories.map { it.toLearningHistory() }.groupBy { it.learnedAt }
+            LearningHistories(learningHistories = map, yearMonth = learningCompleteRequest.yearMonth)
+        }
     }
 }

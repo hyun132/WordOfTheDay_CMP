@@ -2,6 +2,7 @@ package org.hyun.projectkmp.word.data.network
 
 import org.hyun.projectkmp.core.domain.DataError
 import org.hyun.projectkmp.core.domain.Result
+import org.hyun.projectkmp.word.data.dto.LearningHistoriesResponse
 import org.hyun.projectkmp.word.data.dto.SentenceDto
 import org.hyun.projectkmp.word.data.dto.SentencesDto
 import org.hyun.projectkmp.word.data.dto.WordDto
@@ -11,6 +12,7 @@ import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.BookMarksRequestQuery
 import org.hyun.projectkmp.word.domain.model.LearningCompleteRequest
 import org.hyun.projectkmp.word.domain.model.LearningCompleteResponse
+import org.hyun.projectkmp.word.domain.model.LearningHistoriesRequest
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
 import org.hyun.projectkmp.word.domain.model.WordRequestQuery
 
@@ -49,4 +51,8 @@ interface RemoteWordDataSource {
     suspend fun saveLearningHistory(
         request: LearningCompleteRequest
     ): Result<LearningCompleteResponse, DataError.Remote>
+
+    suspend fun getLearningHistories(
+        request: LearningHistoriesRequest
+    ): Result<LearningHistoriesResponse, DataError.Remote>
 }

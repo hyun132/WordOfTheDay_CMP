@@ -12,6 +12,8 @@ import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.BookMarksRequestQuery
 import org.hyun.projectkmp.word.domain.model.LearningCompleteRequest
 import org.hyun.projectkmp.word.domain.model.LearningCompleteResponse
+import org.hyun.projectkmp.word.domain.LearningHistories
+import org.hyun.projectkmp.word.domain.model.LearningHistoriesRequest
 import org.hyun.projectkmp.word.domain.model.WordRequestQuery
 
 interface WordRepository {
@@ -24,4 +26,5 @@ interface WordRepository {
     suspend fun getLearnedWordCount():Result<Long,DataError.Remote>
     suspend fun checkAnswer(requestQuery: AnswerCheckRequest):Result<AnswerResult,DataError.Remote>
     suspend fun saveLearningHistory(learningCompleteRequest: LearningCompleteRequest):Result<LearningCompleteResponse,DataError.Remote>
+    suspend fun getLearningHistories(learningCompleteRequest: LearningHistoriesRequest):Result<LearningHistories,DataError.Remote>
 }
