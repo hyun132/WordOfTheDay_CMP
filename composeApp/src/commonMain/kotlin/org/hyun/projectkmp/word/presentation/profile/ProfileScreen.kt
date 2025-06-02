@@ -26,9 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.hyun.projectkmp.core.presentation.LightPurple
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import wordoftheday.composeapp.generated.resources.Res
 import wordoftheday.composeapp.generated.resources.learned_word_count
+import wordoftheday.composeapp.generated.resources.star
 
 @Composable
 fun ProfileScreenRoot(
@@ -99,7 +101,7 @@ fun ProfileScreen(
                         .fillMaxWidth()
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Star,
+                        painter = painterResource(Res.drawable.star),
                         contentDescription = "star",
                         tint = Color.Yellow
                     )
@@ -131,7 +133,7 @@ fun ProfileScreen(
                         .fillMaxWidth()
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Star,
+                        painter = painterResource(Res.drawable.star),
                         contentDescription = "star",
                         tint = Color.Yellow
                     )

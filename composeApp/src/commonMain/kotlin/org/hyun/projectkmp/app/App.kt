@@ -7,10 +7,12 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +28,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.russhwolf.settings.Settings
 import org.hyun.projectkmp.core.presentation.DeepPurple
 import org.hyun.projectkmp.core.presentation.LightGray
 import org.hyun.projectkmp.word.presentation.WordHomeScreenRoot
@@ -37,8 +38,8 @@ import org.hyun.projectkmp.word.presentation.learning.LearningScreenRoot
 import org.hyun.projectkmp.word.presentation.learning.LearningViewModel
 import org.hyun.projectkmp.word.presentation.profile.ProfileScreenRoot
 import org.hyun.projectkmp.word.presentation.profile.ProfileViewModel
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -128,18 +129,27 @@ fun App() {
 
 @Composable
 fun BottomNavBar(navController: NavController, currentRoute: String) {
-    BottomNavigation(
+    NavigationBar(
         modifier = Modifier,
-        backgroundColor = Color.White,
-        elevation = 12.dp
+        containerColor = Color.White,
+        tonalElevation = 12.dp
     ) {
         bottomNavItems.forEach { navItem ->
-            BottomNavigationItem(
+            NavigationBarItem(
                 selected = currentRoute == navItem.route.toString(),
                 onClick = { navController.navigate(navItem.route) },
-                icon = { Icon(navItem.icon, contentDescription = navItem.label) },
-                selectedContentColor = DeepPurple,
-                unselectedContentColor = LightGray
+                icon = {
+                    Icon(
+                        painter = painterResource(navItem.icon),
+                        contentDescription = navItem.label,
+                        modifier = Modifier.size(24.dp)
+                    )
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = DeepPurple,
+                    unselectedIconColor = LightGray,
+                    indicatorColor = Color.Transparent
+                )
             )
         }
     }

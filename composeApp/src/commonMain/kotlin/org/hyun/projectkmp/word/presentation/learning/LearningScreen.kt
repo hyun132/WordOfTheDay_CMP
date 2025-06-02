@@ -2,7 +2,6 @@ package org.hyun.projectkmp.word.presentation.learning
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -28,6 +26,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,9 +53,12 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import wordoftheday.composeapp.generated.resources.Res
 import wordoftheday.composeapp.generated.resources.back
+import wordoftheday.composeapp.generated.resources.bookmark
 import wordoftheday.composeapp.generated.resources.celebration
+import wordoftheday.composeapp.generated.resources.checked
 import wordoftheday.composeapp.generated.resources.close_dialog
 import wordoftheday.composeapp.generated.resources.learning_completed
+import wordoftheday.composeapp.generated.resources.star
 import wordoftheday.composeapp.generated.resources.submit
 import wordoftheday.composeapp.generated.resources.tab_to_next
 
@@ -159,7 +161,7 @@ fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
                                     )
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.FavoriteBorder,
+                                    painter = painterResource(Res.drawable.bookmark),
                                     contentDescription = "bookmark",
                                     modifier = Modifier
                                         .clickable {
@@ -184,7 +186,7 @@ fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
 
                         if (state.sentenceItems[page].isCorrect == true) {
                             Icon(
-                                imageVector = Icons.Default.CheckCircle,
+                                painter = painterResource(Res.drawable.checked),
                                 contentDescription = "check",
                                 modifier = Modifier
                                     .align(Alignment.CenterHorizontally),
