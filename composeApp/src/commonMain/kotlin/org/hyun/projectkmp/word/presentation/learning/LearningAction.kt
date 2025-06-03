@@ -9,4 +9,6 @@ sealed interface LearningAction {
     data object OnDoneClick : LearningAction
     data object OnSubmit : LearningAction
     data object OnDismiss : LearningAction
+    data object OnModeClick : LearningAction
+    data object OnAudioStartClick : LearningAction
 }

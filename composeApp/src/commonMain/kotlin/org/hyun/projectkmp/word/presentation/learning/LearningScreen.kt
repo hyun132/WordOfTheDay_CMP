@@ -19,7 +19,10 @@ import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -45,6 +48,7 @@ import org.hyun.projectkmp.core.presentation.DeepPurple
 import org.hyun.projectkmp.core.presentation.LightGray
 import org.hyun.projectkmp.core.presentation.LightPurple
 import org.hyun.projectkmp.core.presentation.MediumPurple
+import org.hyun.projectkmp.word.domain.Mode
 import org.hyun.projectkmp.word.presentation.components.LineProgressBar
 import org.hyun.projectkmp.word.presentation.components.UnderlineTextField
 import org.jetbrains.compose.resources.imageResource
@@ -146,8 +150,16 @@ fun ActionBar(
         Text(
             text = state.word,
             modifier = Modifier
-                .fillMaxWidth(),
+                .weight(1f),
             textAlign = TextAlign.Center
+        )
+        Text(
+            text = if (state.mode == Mode.TEXT) Mode.VOICE.name else Mode.TEXT.name,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .clickable {
+                    onAction(LearningAction.OnModeClick)
+                }
         )
     }
 }
@@ -209,48 +221,61 @@ fun SentenceContents(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (state.sentenceItems[page].isCorrect == true) {
-                Icon(
-                    painter = painterResource(Res.drawable.checked),
-                    contentDescription = "check",
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally),
-                    tint = MediumPurple
-                )
-            } else {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = LightPurple)
-                ) {
-                    UnderlineTextField(
-                        text = state.sentenceItems[state.progress].userInput,
-                        onTextChange = {
-                            onAction(LearningAction.OnTextChange(it))
-                        },
-                        modifier = Modifier,
-                        onAction = {
+            if (state.mode == Mode.TEXT) {
+                if (state.sentenceItems[page].isCorrect == true) {
+                    Icon(
+                        painter = painterResource(Res.drawable.checked),
+                        contentDescription = "check",
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally),
+                        tint = MediumPurple
+                    )
+                } else {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = LightPurple)
+                    ) {
+                        UnderlineTextField(
+                            text = state.sentenceItems[state.progress].userInput,
+                            onTextChange = {
+                                onAction(LearningAction.OnTextChange(it))
+                            },
+                            modifier = Modifier,
+                            onAction = {
+                                onAction(LearningAction.OnSubmit)
+                            },
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedButton(
+                        onClick = {
                             onAction(LearningAction.OnSubmit)
                         },
-                    )
+                        border = BorderStroke(width = 2.dp, color = LightGray),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.submit),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedButton(
-                    onClick = {
-                        onAction(LearningAction.OnSubmit)
-                    },
-                    border = BorderStroke(width = 2.dp, color = LightGray),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                ) {
-                    Text(
-                        text = stringResource(Res.string.submit),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+            } else {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Button(onClick = {}) {
+                        Icon(
+                            if (state.isRecording) Icons.Default.Share else Icons.Default.PlayArrow,
+                            contentDescription = "play",
+                            modifier = Modifier.clickable { onAction(LearningAction.OnAudioStartClick) })
+                    }
                 }
             }
+
+
             Spacer(modifier = Modifier.height(12.dp))
 
             if (state.progress != state.totalSize - 1) {

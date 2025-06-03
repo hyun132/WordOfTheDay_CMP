@@ -12,4 +12,5 @@ data class LeaningState(
     val totalSize: Int = 5,
     val mode: Mode = Mode.TEXT,
     val showDialog:Boolean = false,
+    val isRecording:Boolean = false,
 )

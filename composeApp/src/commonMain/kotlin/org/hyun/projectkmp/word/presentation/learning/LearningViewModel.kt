@@ -4,6 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -11,6 +15,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.hyun.projectkmp.VoiceRecognizer
 import org.hyun.projectkmp.app.Routes
 import org.hyun.projectkmp.core.domain.onError
 import org.hyun.projectkmp.core.domain.onSuccess
@@ -25,9 +30,10 @@ import org.hyun.projectkmp.word.domain.repository.WordRepository
 
 class LearningViewModel(
     private val repository: WordRepository,
+    private val recognizer: VoiceRecognizer,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-
+    private var silenceTimerJob: Job? = null
     private val word = savedStateHandle.toRoute<Routes.Word>().word
 
     private val _state = MutableStateFlow(LeaningState())
@@ -96,6 +102,16 @@ class LearningViewModel(
                 _state.update {
                     it.copy(showDialog = false)
                 }
+            }
+
+            is LearningAction.OnModeClick ->{
+                _state.update {
+                    it.copy(mode = if (it.mode == Mode.TEXT) Mode.VOICE else Mode.TEXT)
+                }
+            }
+
+            is LearningAction.OnAudioStartClick->{
+                toggleRecognition()
             }
 
             else -> Unit
@@ -214,6 +230,42 @@ class LearningViewModel(
                         )
                     }
                 }
+        }
+    }
+
+    fun toggleRecognition() {
+        if (recognizer.isRecognizing()) {
+            recognizer.stopRecognition()
+            silenceTimerJob?.cancel()
+        } else {
+            recognizer.startRecognition(
+                onText = { text ->
+                    println("Recognized: $text")
+                    val progress = state.value.progress
+                    val item = state.value.sentenceItems[progress]
+                    submitAnswer(
+                        progress = progress,
+                        mode = state.value.mode,
+                        origin = item.sentence,
+                        userInput = text
+                    )
+                    restartSilenceTimer()
+                    _state.update { it.copy(isRecording = true) }
+                },
+                onFinished = {
+                    _state.update { it.copy(isRecording = false) }
+                    println("Recognition finished due to silence.")
+                }
+            )
+            restartSilenceTimer()
+        }
+    }
+
+    private fun restartSilenceTimer() {
+        silenceTimerJob?.cancel()
+        silenceTimerJob = viewModelScope.launch {
+            delay(3000) // 3초간 입력 없으면 중단
+            recognizer.stopRecognition()
         }
     }
 }

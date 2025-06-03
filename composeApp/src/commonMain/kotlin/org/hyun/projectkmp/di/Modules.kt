@@ -14,6 +14,7 @@ import org.hyun.projectkmp.word.presentation.learning.LearningViewModel
 import org.hyun.projectkmp.word.presentation.profile.ProfileViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -28,8 +29,8 @@ val sharedModule = module {
     single { Settings() }
 
     viewModelOf(::WordHomeViewModel)
-    viewModelOf(::LearningViewModel)
     viewModelOf(::HistoryViewModel)
     viewModelOf(::BookmarkViewModel)
     viewModelOf(::ProfileViewModel)
+    viewModel { LearningViewModel(get(),get(),get()) }
 }
