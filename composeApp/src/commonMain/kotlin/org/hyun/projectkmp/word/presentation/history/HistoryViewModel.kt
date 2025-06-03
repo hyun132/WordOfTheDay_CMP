@@ -8,6 +8,10 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 import org.hyun.projectkmp.core.domain.onError
 import org.hyun.projectkmp.core.domain.onSuccess
 import org.hyun.projectkmp.core.presentation.toUiText
@@ -35,6 +39,22 @@ class HistoryViewModel(
 
             }
 
+            is HistoryAction.OnNextMonthClick -> {
+                val newYearMonth = getNextMonth(action.yearMonth)
+                _state.update {
+                    it.copy(displayedYearMonth = newYearMonth)
+                }
+                getHistory(newYearMonth)
+            }
+
+            is HistoryAction.OnPreviousMonthClick -> {
+                val newYearMonth = getPrevMonth(action.yearMonth)
+                _state.update {
+                    it.copy(displayedYearMonth = newYearMonth)
+                }
+                getHistory(newYearMonth)
+            }
+
             else -> Unit
         }
     }
@@ -56,5 +76,30 @@ class HistoryViewModel(
                     }
                 }
         }
+    }
+
+
+    fun getPrevMonth(current: String): String {
+        val current = yearMonthStringToLocalDate(current)
+        val prev = current.minus(1, DateTimeUnit.MONTH)
+
+        return prev.year.toString().padStart(4, '0') + "-" + prev.monthNumber.toString()
+            .padStart(2, '0')
+    }
+
+    fun getNextMonth(current: String): String {
+        val current = yearMonthStringToLocalDate(current)
+        val next = current.plus(1, DateTimeUnit.MONTH)
+
+        return next.year.toString().padStart(4, '0') + "-" + next.monthNumber.toString()
+            .padStart(2, '0')
+    }
+
+    fun yearMonthStringToLocalDate(current: String): LocalDate {
+        val parts = current.split("-")
+        val year = parts[0].toInt()
+        val month = parts[1].toInt()
+
+        return LocalDate(year, month, 1)
     }
 }
