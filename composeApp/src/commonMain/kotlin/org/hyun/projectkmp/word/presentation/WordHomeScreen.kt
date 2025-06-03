@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -85,10 +86,20 @@ fun WordHomeScreen(
                     .background(color = LightGray),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = state.word,
-                    style = MaterialTheme.typography.headlineLarge,
-                )
+                if (state.isLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    Text(
+                        text = state.word,
+                        style = MaterialTheme.typography.headlineLarge,
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(

@@ -14,12 +14,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -53,7 +52,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import wordoftheday.composeapp.generated.resources.Res
 import wordoftheday.composeapp.generated.resources.back
-import wordoftheday.composeapp.generated.resources.bookmark
 import wordoftheday.composeapp.generated.resources.celebration
 import wordoftheday.composeapp.generated.resources.checked
 import wordoftheday.composeapp.generated.resources.close_dialog
@@ -87,28 +85,7 @@ fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(Res.drawable.back),
-                contentDescription = "",
-                modifier = Modifier
-                    .clickable {
-                        onAction(LearningAction.OnBackClick)
-                    }
-                    .size(40.dp)
-            )
-            Text(
-                text = state.word,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-        }
-        LineProgressBar(state.progress, state.totalSize)
+        ActionBar(onAction, state)
         if (state.isLoading) {
             Box(
                 modifier = Modifier
@@ -133,120 +110,166 @@ fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
                     }
             }
 
-            if (state.sentenceItems.isNotEmpty())
-                VerticalPager(
-                    state = pagerState,
+            if (state.sentenceItems.isNotEmpty()) {
+                LineProgressBar(state.progress, state.totalSize)
+                SentenceContents(
+                    state = state,
+                    pagerState = pagerState,
+                    onAction = onAction,
+                    modifier = Modifier.fillMaxWidth()
+                        .weight(1f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ActionBar(
+    onAction: (LearningAction) -> Unit,
+    state: LeaningState
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(Res.drawable.back),
+            contentDescription = "",
+            modifier = Modifier
+                .clickable {
+                    onAction(LearningAction.OnBackClick)
+                }
+                .size(40.dp)
+        )
+        Text(
+            text = state.word,
+            modifier = Modifier
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+fun SentenceContents(
+    state: LeaningState,
+    pagerState: PagerState,
+    onAction: (LearningAction) -> Unit,
+    modifier: Modifier
+) {
+    VerticalPager(
+        state = pagerState,
+        modifier = modifier
+    ) { page ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = LightGray)
+            ) {
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
-                ) { page ->
-                    Column(
+                        .padding(
+                            top = 16.dp,
+                            bottom = 40.dp,
+                            start = 24.dp,
+                            end = 24.dp
+                        )
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.star),
+                        contentDescription = "bookmark",
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
-                    ) {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = LightGray)
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(
-                                        top = 16.dp,
-                                        bottom = 40.dp,
-                                        start = 24.dp,
-                                        end = 24.dp
-                                    )
-                            ) {
-                                Icon(
-                                    painter = painterResource(Res.drawable.bookmark),
-                                    contentDescription = "bookmark",
-                                    modifier = Modifier
-                                        .clickable {
-                                            onAction(LearningAction.OnBookMarkClick(state.sentenceItems[page].sentence))
-                                        }.align(Alignment.End),
-                                )
-
-                                Text(
-                                    text = state.sentenceItems[page].sentence,
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.labelLarge,
-                                    fontSize = 26.sp,
-                                    color = DeepPurple,
-                                    lineHeight = 30.sp
-                                )
+                            .clickable {
+                                onAction(LearningAction.OnBookMarkClick(state.sentenceItems[page].sentence))
                             }
-                        }
+                            .align(Alignment.End)
+                            .size(20.dp),
+                    )
 
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        if (state.sentenceItems[page].isCorrect == true) {
-                            Icon(
-                                painter = painterResource(Res.drawable.checked),
-                                contentDescription = "check",
-                                modifier = Modifier
-                                    .align(Alignment.CenterHorizontally),
-                                tint = MediumPurple
-                            )
-                        } else {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                colors = CardDefaults.cardColors(containerColor = LightPurple)
-                            ) {
-                                UnderlineTextField(
-                                    text = state.sentenceItems[state.progress].userInput,
-                                    onTextChange = {
-                                        onAction(LearningAction.OnTextChange(it))
-                                    },
-                                    modifier = Modifier,
-                                    onAction = {
-                                        onAction(LearningAction.OnSubmit)
-                                    },
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                            OutlinedButton(
-                                onClick = {
-                                    onAction(LearningAction.OnSubmit)
-                                },
-                                border = BorderStroke(width = 2.dp, color = LightGray),
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .align(Alignment.CenterHorizontally)
-                            ) {
-                                Text(
-                                    text = stringResource(Res.string.submit),
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        if (state.progress != state.totalSize - 1) {
-                            Text(
-                                stringResource(Res.string.tab_to_next),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        onAction(LearningAction.OnNext)
-                                    },
-                                textAlign = TextAlign.Center
-                            )
-                        }
-
-                        if (state.showDialog) {
-                            DoneDialog {
-                                onAction(LearningAction.OnBackClick)
-                            }
-                        }
-                    }
+                    Text(
+                        text = state.sentenceItems[page].sentence,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontSize = 26.sp,
+                        color = DeepPurple,
+                        lineHeight = 30.sp
+                    )
                 }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (state.sentenceItems[page].isCorrect == true) {
+                Icon(
+                    painter = painterResource(Res.drawable.checked),
+                    contentDescription = "check",
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally),
+                    tint = MediumPurple
+                )
+            } else {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = LightPurple)
+                ) {
+                    UnderlineTextField(
+                        text = state.sentenceItems[state.progress].userInput,
+                        onTextChange = {
+                            onAction(LearningAction.OnTextChange(it))
+                        },
+                        modifier = Modifier,
+                        onAction = {
+                            onAction(LearningAction.OnSubmit)
+                        },
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedButton(
+                    onClick = {
+                        onAction(LearningAction.OnSubmit)
+                    },
+                    border = BorderStroke(width = 2.dp, color = LightGray),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                ) {
+                    Text(
+                        text = stringResource(Res.string.submit),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+
+            if (state.progress != state.totalSize - 1) {
+                Text(
+                    stringResource(Res.string.tab_to_next),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onAction(LearningAction.OnNext)
+                        },
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            if (state.showDialog) {
+                DoneDialog {
+                    onAction(LearningAction.OnBackClick)
+                }
+            }
         }
     }
 }

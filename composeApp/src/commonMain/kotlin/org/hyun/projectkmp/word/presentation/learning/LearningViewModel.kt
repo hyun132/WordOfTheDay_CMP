@@ -136,6 +136,7 @@ class LearningViewModel(
                         val list = result.map { LearningSentenceItem(sentence = it) }
                         it.copy(
                             sentenceItems = list,
+                            totalSize = list.size,
                             isLoading = false
                         )
                     }
