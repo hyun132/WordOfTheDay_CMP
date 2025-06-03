@@ -16,7 +16,6 @@ import org.hyun.projectkmp.core.presentation.toUiText
 import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.BookMarksRequestQuery
 import org.hyun.projectkmp.word.domain.repository.WordRepository
-import org.koin.compose.koinInject
 
 class BookmarkViewModel(
     private val repository: WordRepository,
