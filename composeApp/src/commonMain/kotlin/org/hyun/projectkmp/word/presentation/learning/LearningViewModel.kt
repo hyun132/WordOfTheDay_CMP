@@ -4,8 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,7 +51,8 @@ class LearningViewModel(
     fun onAction(action: LearningAction) {
         when (action) {
             is LearningAction.OnBookMarkClick -> {
-                bookMark(action.sentence)
+                if (action.isBookmarked) removeBookmark(action.sentence)
+                else bookMark(action.sentence)
             }
 
             is LearningAction.OnScroll -> {
@@ -104,13 +103,13 @@ class LearningViewModel(
                 }
             }
 
-            is LearningAction.OnModeClick ->{
+            is LearningAction.OnModeClick -> {
                 _state.update {
                     it.copy(mode = if (it.mode == Mode.TEXT) Mode.VOICE else Mode.TEXT)
                 }
             }
 
-            is LearningAction.OnAudioStartClick->{
+            is LearningAction.OnAudioStartClick -> {
                 toggleRecognition()
             }
 
@@ -124,8 +123,33 @@ class LearningViewModel(
                 BookMarkRequestQuery(sentence = sentence)
             )
                 .onSuccess {
+                    val list = state.value.sentenceItems.toMutableList()
+                        .map { if (it.sentence == sentence) it.copy(isBookmarked = true) else it }
                     _state.update {
-                        it.copy(isLoading = false)
+                        it.copy(isLoading = false, sentenceItems = list)
+                    }
+                }
+                .onError { e ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = e.toUiText()
+                        )
+                    }
+                }
+        }
+    }
+
+    private fun removeBookmark(sentence: String) {
+        viewModelScope.launch {
+            repository.deleteBookMark(
+                BookMarkRequestQuery(sentence = sentence)
+            )
+                .onSuccess {
+                    val list = state.value.sentenceItems.toMutableList()
+                        .map { if (it.sentence == sentence) it.copy(isBookmarked = false) else it }
+                    _state.update {
+                        it.copy(isLoading = false, sentenceItems = list)
                     }
                 }
                 .onError { e ->
@@ -237,10 +261,12 @@ class LearningViewModel(
         if (recognizer.isRecognizing()) {
             recognizer.stopRecognition()
             silenceTimerJob?.cancel()
+            _state.update { it.copy(isRecording = false) }
         } else {
             recognizer.startRecognition(
                 onText = { text ->
                     println("Recognized: $text")
+                    _state.update { it.copy(isRecording = true) }
                     val progress = state.value.progress
                     val item = state.value.sentenceItems[progress]
                     submitAnswer(
@@ -250,7 +276,6 @@ class LearningViewModel(
                         userInput = text
                     )
                     restartSilenceTimer()
-                    _state.update { it.copy(isRecording = true) }
                 },
                 onFinished = {
                     _state.update { it.copy(isRecording = false) }

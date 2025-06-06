@@ -19,10 +19,9 @@ import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -59,8 +58,12 @@ import wordoftheday.composeapp.generated.resources.back
 import wordoftheday.composeapp.generated.resources.celebration
 import wordoftheday.composeapp.generated.resources.checked
 import wordoftheday.composeapp.generated.resources.close_dialog
+import wordoftheday.composeapp.generated.resources.filled_star
 import wordoftheday.composeapp.generated.resources.learning_completed
+import wordoftheday.composeapp.generated.resources.play
+import wordoftheday.composeapp.generated.resources.rotate_left
 import wordoftheday.composeapp.generated.resources.star
+import wordoftheday.composeapp.generated.resources.stop
 import wordoftheday.composeapp.generated.resources.submit
 import wordoftheday.composeapp.generated.resources.tab_to_next
 
@@ -180,49 +183,20 @@ fun SentenceContents(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = LightGray)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            top = 16.dp,
-                            bottom = 40.dp,
-                            start = 24.dp,
-                            end = 24.dp
-                        )
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.star),
-                        contentDescription = "bookmark",
-                        modifier = Modifier
-                            .clickable {
-                                onAction(LearningAction.OnBookMarkClick(state.sentenceItems[page].sentence))
-                            }
-                            .align(Alignment.End)
-                            .size(20.dp),
+            val currentItem = state.sentenceItems[page]
+            SentenceContent(currentItem.sentence, currentItem.isBookmarked) {
+                onAction(
+                    LearningAction.OnBookMarkClick(
+                        currentItem.sentence,
+                        currentItem.isBookmarked
                     )
-
-                    Text(
-                        text = state.sentenceItems[page].sentence,
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.labelLarge,
-                        fontSize = 26.sp,
-                        color = DeepPurple,
-                        lineHeight = 30.sp
-                    )
-                }
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             if (state.mode == Mode.TEXT) {
-                if (state.sentenceItems[page].isCorrect == true) {
+                if (currentItem.isCorrect == true) {
                     Icon(
                         painter = painterResource(Res.drawable.checked),
                         contentDescription = "check",
@@ -265,16 +239,28 @@ fun SentenceContents(
                     }
                 }
             } else {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Button(onClick = {}) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val img =
+                        if (state.isRecording) imageResource(Res.drawable.stop)
+                        else if (currentItem.isCorrect == true) imageResource(Res.drawable.rotate_left)
+                        else imageResource(Res.drawable.play)
+                    Button(
+                        onClick = { onAction(LearningAction.OnAudioStartClick) },
+                        colors = ButtonDefaults.buttonColors(containerColor = LightPurple)
+                    ) {
                         Icon(
-                            if (state.isRecording) Icons.Default.Share else Icons.Default.PlayArrow,
+                            bitmap = img,
                             contentDescription = "play",
-                            modifier = Modifier.clickable { onAction(LearningAction.OnAudioStartClick) })
+                            modifier = Modifier
+                                .size(20.dp),
+                        )
                     }
+
                 }
             }
-
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -295,6 +281,54 @@ fun SentenceContents(
                     onAction(LearningAction.OnBackClick)
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun SentenceContent(
+    sentence: String,
+    bookmarked: Boolean,
+    onBookmarkClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = LightGray)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    top = 16.dp,
+                    bottom = 40.dp,
+                    start = 24.dp,
+                    end = 24.dp
+                )
+        ) {
+            Icon(
+                painter = if (bookmarked) painterResource(Res.drawable.filled_star) else painterResource(
+                    Res.drawable.star
+                ),
+                contentDescription = "bookmark",
+                modifier = Modifier
+                    .clickable {
+                        onBookmarkClick()
+                    }
+                    .align(Alignment.End)
+                    .size(20.dp),
+            )
+
+            Text(
+                text = sentence,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelLarge,
+                fontSize = 26.sp,
+                color = DeepPurple,
+                lineHeight = 30.sp
+            )
         }
     }
 }
