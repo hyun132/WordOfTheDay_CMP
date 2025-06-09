@@ -1,14 +1,21 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
+# WordOfTheDay
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+**WordOfTheDay**는 Kotlin Multiplatform 기반의 영어 학습 앱입니다.  
+Android, iOS, Desktop에서 동일한 코어 로직으로 동작하며, 텍스트 입력/음성 인식 기능을 활용하여 학습할 수 있습니다.(현재 음성인식기능은 Android, iOS만 지원)
 
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+## 🔧 기술 스택
+
+- Kotlin Multiplatform (Android / iOS / Desktop)
+- Jetpack Compose Multiplatform (UI)
+- Cloud Speech-to-Text API + SpeechRecognizer (Android 음성 인식) / SFSpeechRecognizer (iOS 음성 인식)
+- Koin (DI)
+- Ktor (네트워크 통신)
+- Gradle Kotlin DSL
 
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## 🎯 주요 기능
+
+- ✅ 매일 추천 영어 단어 제시
+- 🎤 실시간 음성 인식으로 문장 말하기 연습
+- 📊 학습 기록 저장 및 연속 학습일수 관리
+- 🧠 난이도별 단어 학습 (BEGINNER, INTERMEDIATE, ADVANCED)
