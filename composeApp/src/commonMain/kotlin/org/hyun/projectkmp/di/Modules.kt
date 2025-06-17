@@ -1,6 +1,11 @@
 package org.hyun.projectkmp.di
 
 import com.russhwolf.settings.Settings
+import org.hyun.projectkmp.auth.data.network.KtorRemoteAuthDataSource
+import org.hyun.projectkmp.auth.data.network.RemoteAuthDataSource
+import org.hyun.projectkmp.auth.data.reporitory.DefaultAuthRepository
+import org.hyun.projectkmp.auth.domain.repository.RemoteRepository
+import org.hyun.projectkmp.auth.presentation.login.LoginViewModel
 import org.hyun.projectkmp.core.data.HttpClientFactory
 import org.hyun.projectkmp.word.data.network.KtorRemoteWordDataSource
 import org.hyun.projectkmp.word.data.network.RemoteWordDataSource
@@ -26,6 +31,9 @@ val sharedModule = module {
     singleOf(::KtorRemoteWordDataSource).bind<RemoteWordDataSource>()
     singleOf(::DefaultWordRepository).bind<WordRepository>()
     singleOf(::LocalRepository)
+
+    singleOf(::KtorRemoteAuthDataSource).bind<RemoteAuthDataSource>()
+    singleOf(::DefaultAuthRepository).bind<RemoteRepository>()
     single { Settings() }
 
     viewModelOf(::WordHomeViewModel)
@@ -33,4 +41,5 @@ val sharedModule = module {
     viewModelOf(::BookmarkViewModel)
     viewModelOf(::ProfileViewModel)
     viewModel { LearningViewModel(get(),get(),get()) }
+    viewModelOf(::LoginViewModel)
 }

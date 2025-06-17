@@ -10,27 +10,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.hyun.projectkmp.core.presentation.LightPurple
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import wordoftheday.composeapp.generated.resources.Res
 import wordoftheday.composeapp.generated.resources.learned_word_count
-import wordoftheday.composeapp.generated.resources.star
 
 @Composable
 fun ProfileScreenRoot(
@@ -100,11 +93,12 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.star),
-                        contentDescription = "star",
-                        tint = Color.Yellow
-                    )
+//                    Icon(
+//                        painter = painterResource(Res.drawable.filled_star),
+//                        contentDescription = "star",
+//                        tint = Color.Yellow,
+//                        modifier = Modifier.size(20.dp)
+//                    )
                     Text(
                         text = stringResource(Res.string.learned_word_count),
                         modifier = Modifier.fillMaxWidth(),
@@ -132,11 +126,12 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.star),
-                        contentDescription = "star",
-                        tint = Color.Yellow
-                    )
+//                    Icon(
+//                        painter = painterResource(Res.drawable.filled_star),
+//                        contentDescription = "star",
+//                        tint = Color.Yellow,
+//                        modifier = Modifier.size(20.dp)
+//                    )
                     Text(
                         text = stringResource(Res.string.learned_word_count),
                         modifier = Modifier.fillMaxWidth(),

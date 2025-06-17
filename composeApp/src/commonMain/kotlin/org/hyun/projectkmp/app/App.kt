@@ -14,7 +14,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -28,6 +27,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import org.hyun.projectkmp.auth.presentation.forgot_password.ForgotPasswordRoot
+import org.hyun.projectkmp.auth.presentation.login.LoginScreenRoot
+import org.hyun.projectkmp.auth.presentation.login.LoginViewModel
+import org.hyun.projectkmp.auth.presentation.signup.SignupScreenRoot
 import org.hyun.projectkmp.core.presentation.DeepPurple
 import org.hyun.projectkmp.core.presentation.LightGray
 import org.hyun.projectkmp.word.presentation.WordHomeScreenRoot
@@ -69,11 +72,34 @@ fun App() {
         ) { paddingValue ->
             NavHost(
                 navController = navController,
-                startDestination = Routes.MainGraph,
+                startDestination = Routes.AuthGraph,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValue)
             ) {
+                navigation<Routes.AuthGraph>(
+                    startDestination = Routes.Login
+                ) {
+                    composable<Routes.Login> {
+                        val viewModel = koinViewModel<LoginViewModel>()
+                        LoginScreenRoot(
+                            viewModel = viewModel,
+                            onSignUpClick = {
+                                navController.navigate(Routes.SignUp)
+                            },
+                            onForgotClick = {
+                                navController.navigate(Routes.ForgotPassword)
+                            }
+                        )
+                    }
+                    composable<Routes.SignUp> {
+                        SignupScreenRoot()
+                    }
+                    composable<Routes.ForgotPassword> {
+                        ForgotPasswordRoot()
+                    }
+                }
+
                 navigation<Routes.MainGraph>(
                     startDestination = Routes.Home
                 ) {

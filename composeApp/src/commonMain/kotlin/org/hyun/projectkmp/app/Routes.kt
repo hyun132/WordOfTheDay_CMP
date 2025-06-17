@@ -20,6 +20,18 @@ sealed interface Routes {
     data object MainGraph : Routes
 
     @Serializable
+    data object AuthGraph : Routes
+
+    @Serializable
+    data object Login : Routes
+
+    @Serializable
+    data object SignUp : Routes
+
+    @Serializable
+    data object ForgotPassword : Routes
+
+    @Serializable
     data object Home : Routes
 
     @Serializable

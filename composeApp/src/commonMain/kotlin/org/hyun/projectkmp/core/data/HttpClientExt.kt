@@ -20,6 +20,7 @@ suspend inline fun <reified T> safeCall(
     } catch (e: UnresolvedAddressException) {
         return Result.Error(DataError.Remote.NO_INTERNET)
     } catch (e: Exception) {
+        println(e.message)
         coroutineContext.ensureActive()
         return Result.Error(DataError.Remote.UNKNOWN)
     }
@@ -38,6 +39,9 @@ suspend inline fun <reified T> responseToResult(
                 Result.Error(DataError.Remote.SERIALIZATION)
             }
         }
+        400 -> Result.Error(DataError.Remote.BAD_REQUEST)
+        401 -> Result.Error(DataError.Remote.UNAUTHORIZED)
+        403 -> Result.Error(DataError.Remote.FORBIDDEN)
         408 -> Result.Error(DataError.Remote.REQUEST_TIMEOUT)
         429 -> Result.Error(DataError.Remote.TOO_MANY_REQUESTS)
         in 500..599 -> Result.Error(DataError.Remote.SERVER)
