@@ -3,6 +3,7 @@ package org.hyun.projectkmp.auth.data.network
 import org.hyun.projectkmp.auth.domain.dto.ChangePasswordRequest
 import org.hyun.projectkmp.auth.domain.dto.ChangePasswordResponse
 import org.hyun.projectkmp.auth.domain.dto.CheckEmailResponse
+import org.hyun.projectkmp.auth.domain.dto.InfoResponse
 import org.hyun.projectkmp.auth.domain.dto.LoginRequest
 import org.hyun.projectkmp.auth.domain.dto.LoginResponse
 import org.hyun.projectkmp.auth.domain.dto.SignupRequest
@@ -26,4 +27,6 @@ interface RemoteAuthDataSource {
     suspend fun checkEmail(
         email: String
     ): Result<CheckEmailResponse, DataError.Remote>
+
+    suspend fun getInfo(token:String): Result<InfoResponse, DataError.Remote>
 }

@@ -1,7 +1,9 @@
 package org.hyun.projectkmp.auth.data.network
 
+import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -9,6 +11,7 @@ import io.ktor.http.contentType
 import org.hyun.projectkmp.auth.domain.dto.ChangePasswordRequest
 import org.hyun.projectkmp.auth.domain.dto.ChangePasswordResponse
 import org.hyun.projectkmp.auth.domain.dto.CheckEmailResponse
+import org.hyun.projectkmp.auth.domain.dto.InfoResponse
 import org.hyun.projectkmp.auth.domain.dto.LoginRequest
 import org.hyun.projectkmp.auth.domain.dto.LoginResponse
 import org.hyun.projectkmp.auth.domain.dto.SignupRequest
@@ -53,6 +56,15 @@ class KtorRemoteAuthDataSource(
     override suspend fun checkEmail(email: String): Result<CheckEmailResponse, DataError.Remote> {
         return safeCall {
             httpClient.get("$BASE_URL/auth/check-email?email=$email"){
+                contentType(ContentType.Application.Json)
+            }
+        }
+    }
+
+    override suspend fun getInfo(token:String): Result<InfoResponse, DataError.Remote> {
+        return safeCall {
+            httpClient.get("$BASE_URL/auth/me"){
+                header("Authorization", "Bearer $token")
                 contentType(ContentType.Application.Json)
             }
         }

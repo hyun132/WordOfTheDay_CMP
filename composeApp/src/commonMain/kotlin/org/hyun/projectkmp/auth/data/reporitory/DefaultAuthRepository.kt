@@ -4,6 +4,7 @@ import org.hyun.projectkmp.auth.data.network.RemoteAuthDataSource
 import org.hyun.projectkmp.auth.domain.dto.ChangePasswordRequest
 import org.hyun.projectkmp.auth.domain.dto.ChangePasswordResponse
 import org.hyun.projectkmp.auth.domain.dto.CheckEmailResponse
+import org.hyun.projectkmp.auth.domain.dto.InfoResponse
 import org.hyun.projectkmp.auth.domain.dto.LoginRequest
 import org.hyun.projectkmp.auth.domain.dto.LoginResponse
 import org.hyun.projectkmp.auth.domain.dto.SignupRequest
@@ -31,4 +32,7 @@ class DefaultAuthRepository(
         return dataSource.changePassword(request)
     }
 
+    override suspend fun getMyInfo(token:String): Result<InfoResponse, DataError.Remote> {
+       return dataSource.getInfo(token)
+    }
 }
