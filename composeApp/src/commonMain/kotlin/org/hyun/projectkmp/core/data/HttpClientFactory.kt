@@ -13,6 +13,7 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.plugin
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -20,6 +21,8 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 object HttpClientFactory {
+
+    val bearerTokenStorage = mutableListOf<BearerTokens>()
 
     fun create(engine: HttpClientEngine): HttpClient {
         return HttpClient(engine) {
@@ -49,9 +52,10 @@ object HttpClientFactory {
                 bearer {
                     loadTokens {
                         BearerTokens(
-                            Settings().getString("access", ""),
+                            Settings().getString("access", "default"),
                             Settings().getString("refresh", "")
                         )
+//                        bearerTokenStorage.last()
                     }
                 }
             }

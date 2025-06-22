@@ -1,6 +1,8 @@
 package org.hyun.projectkmp.word.data.network
 
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.authProvider
+import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
@@ -33,6 +35,9 @@ class KtorRemoteWordDataSource(
 ) : RemoteWordDataSource {
     override suspend fun getTodaysWord(query: WordRequestQuery): Result<WordDto, DataError.Remote> {
         return safeCall {
+            val authProvider = httpClient.authProvider<BearerAuthProvider>()
+            requireNotNull(authProvider)
+            authProvider.clearToken()
             httpClient.get("$BASE_URL/word"){
                 parameter("subject",query.subject)
                 parameter("difficulty",query.difficulty.name)

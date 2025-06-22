@@ -2,6 +2,8 @@ package org.hyun.projectkmp.auth.data.network
 
 import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.authProvider
+import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -37,6 +39,9 @@ class KtorRemoteAuthDataSource(
 
     override suspend fun login(request: LoginRequest): Result<LoginResponse, DataError.Remote> {
         return safeCall {
+            val authProvider = httpClient.authProvider<BearerAuthProvider>()
+            requireNotNull(authProvider)
+            authProvider.clearToken()
             httpClient.post("$BASE_URL/auth/login"){
                 contentType(ContentType.Application.Json)
                 setBody(request)
@@ -63,6 +68,9 @@ class KtorRemoteAuthDataSource(
 
     override suspend fun getInfo(): Result<InfoResponse, DataError.Remote> {
         return safeCall {
+            val authProvider = httpClient.authProvider<BearerAuthProvider>()
+            requireNotNull(authProvider)
+            authProvider.clearToken()
             httpClient.get("$BASE_URL/auth/me"){
                 contentType(ContentType.Application.Json)
             }
