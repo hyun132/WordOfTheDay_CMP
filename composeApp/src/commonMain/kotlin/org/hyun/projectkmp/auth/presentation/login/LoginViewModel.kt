@@ -2,19 +2,21 @@ package org.hyun.projectkmp.auth.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.russhwolf.settings.Settings
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.hyun.projectkmp.app.Routes
 import org.hyun.projectkmp.auth.domain.dto.LoginRequest
 import org.hyun.projectkmp.auth.domain.repository.RemoteRepository
 import org.hyun.projectkmp.core.domain.onError
 import org.hyun.projectkmp.core.domain.onSuccess
 import org.hyun.projectkmp.core.presentation.UiEffect
-import org.hyun.projectkmp.core.presentation.UiText
-import wordoftheday.composeapp.generated.resources.Res
-import wordoftheday.composeapp.generated.resources.login_failed
 
 class LoginViewModel(
     private val repository: RemoteRepository
@@ -24,7 +26,7 @@ class LoginViewModel(
     val state = _state
 
     private val _effect = MutableSharedFlow<UiEffect>()
-    val effect: SharedFlow<UiEffect> = _effect
+    val effect: SharedFlow<UiEffect> = _effect.asSharedFlow()
 
     fun onAction(action: LoginAction) {
         when (action) {
@@ -50,7 +52,7 @@ class LoginViewModel(
 
     fun login() {
         _state.update { it.copy(isLoading = true) }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val state = state.value
             repository.login(
                 LoginRequest(
@@ -58,10 +60,14 @@ class LoginViewModel(
                     password = state.password
                 )
             ).onSuccess {
+                val settings = Settings()
+                settings.putString("access",it.accessToken)
+                settings.putString("refresh",it.refreshToken)
                 _state.update { it.copy(isLoggedIn = true, isLoading = false) }
+                _effect.emit(UiEffect.NavigateTo(Routes.MainGraph))
             }.onError { e ->
-                _effect.tryEmit(UiEffect.ShowError(e.name))
-                _state.update { it.copy(isLoading = false, email = e.name) }
+                _state.update { it.copy(isLoading = false) }
+                _effect.emit(UiEffect.ShowError("error : " +e.name))
             }
         }
     }

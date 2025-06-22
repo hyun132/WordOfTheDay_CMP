@@ -11,20 +11,25 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,31 +39,34 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.hyun.projectkmp.app.Routes
 import org.hyun.projectkmp.core.presentation.DeepPurple
-import org.hyun.projectkmp.core.presentation.LightPurple
 import org.hyun.projectkmp.core.presentation.UiEffect
 import org.jetbrains.compose.resources.painterResource
-import org.koin.compose.viewmodel.koinViewModel
 import wordoftheday.composeapp.generated.resources.Res
-import wordoftheday.composeapp.generated.resources.setting_2
-import wordoftheday.composeapp.generated.resources.setting_4
+import wordoftheday.composeapp.generated.resources.eye
+import wordoftheday.composeapp.generated.resources.eye_slash
 
 @Composable
 fun LoginScreenRoot(
     viewModel: LoginViewModel,
-    onSignUpClick: () -> Unit,
-    onForgotClick: () -> Unit
+    showSnackBar: (String) -> Unit,
+    navigateTo: (Routes) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val snackbarMessage = remember { mutableStateOf<String?>(null) }
-
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is UiEffect.ShowError -> {
-                    snackbarMessage.value = effect.message
+                    showSnackBar(effect.message)
                 }
+
+                is UiEffect.NavigateTo -> {
+                    navigateTo(effect.destination)
+                }
+
+                else -> Unit
             }
         }
     }
@@ -72,11 +80,11 @@ fun LoginScreenRoot(
             onAction = { action ->
                 when (action) {
                     is LoginAction.OnSignupClick -> {
-                        onSignUpClick()
+                        navigateTo(Routes.SignUp)
                     }
 
                     is LoginAction.OnForgotClick -> {
-                        onForgotClick()
+                        navigateTo(Routes.ForgotPassword)
                     }
 
                     else -> Unit
@@ -85,23 +93,6 @@ fun LoginScreenRoot(
             }
         )
 
-        snackbarMessage.value?.let {
-            println("show $it")
-            Text(it)
-            ErrorBanner(it, Modifier.align(Alignment.BottomCenter))
-        }
-    }
-}
-
-@Composable
-fun ErrorBanner(message: String, modifier: Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(LightPurple)
-            .padding(16.dp)
-    ) {
-        Text(text = message, color = Color.White)
     }
 }
 
@@ -143,16 +134,8 @@ fun LoginScreen(
                     onAction(LoginAction.OnForgotClick)
                 })
         Spacer(modifier = Modifier.height(40.dp))
-        Button(
-            onClick = {
-                onAction(LoginAction.OnLoginClick)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(54.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = DeepPurple)
-        ) {
-            Text(text = "Login")
+        DefaultButton("Login") {
+            onAction(LoginAction.OnLoginClick)
         }
         Spacer(modifier = Modifier.height(40.dp))
         Row(
@@ -171,6 +154,25 @@ fun LoginScreen(
         }
     }
 
+}
+
+@Composable
+fun DefaultButton(
+    text: String,
+    colors: ButtonColors = ButtonDefaults.buttonColors(containerColor = DeepPurple),
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = {
+            onClick()
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(54.dp),
+        colors = colors
+    ) {
+        Text(text = text)
+    }
 }
 
 @Composable
@@ -202,10 +204,10 @@ private fun PasswordField(
         },
         visualTransformation = if (state.showPassword) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
-            val icon = if (state.showPassword) painterResource(Res.drawable.setting_2)
-            else painterResource(Res.drawable.setting_4)
+            val icon = if (state.showPassword) painterResource(Res.drawable.eye)
+            else painterResource(Res.drawable.eye_slash)
             IconButton(onClick = { onAction(LoginAction.TogglePasswordVisibility) }) {
-                Icon(painter = icon, "toggle password")
+                Icon(painter = icon, "toggle password", modifier = Modifier.size(20.dp))
             }
         },
         modifier = Modifier.fillMaxWidth()

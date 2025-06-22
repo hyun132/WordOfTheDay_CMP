@@ -14,8 +14,11 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -27,10 +30,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
 import org.hyun.projectkmp.auth.presentation.forgot_password.ForgotPasswordRoot
 import org.hyun.projectkmp.auth.presentation.login.LoginScreenRoot
 import org.hyun.projectkmp.auth.presentation.login.LoginViewModel
 import org.hyun.projectkmp.auth.presentation.signup.SignupScreenRoot
+import org.hyun.projectkmp.auth.presentation.signup.SignupViewModel
 import org.hyun.projectkmp.core.presentation.DeepPurple
 import org.hyun.projectkmp.core.presentation.LightGray
 import org.hyun.projectkmp.word.presentation.WordHomeScreenRoot
@@ -56,7 +61,8 @@ fun App() {
             navController.currentBackStackEntryAsState().value?.destination?.route?.split(".")
                 ?.last()
         val bottomNavRoutes = bottomNavItems.map { it.label }
-
+        val snackbarHostState = remember { SnackbarHostState() }
+        val coroutineScope = rememberCoroutineScope()
         Scaffold(
             bottomBar = {
                 AnimatedVisibility(
@@ -68,7 +74,8 @@ fun App() {
                         BottomNavBar(navController, currentRoute)
                     }
                 }
-            }
+            },
+            snackbarHost = {SnackbarHost(hostState = snackbarHostState)}
         ) { paddingValue ->
             NavHost(
                 navController = navController,
@@ -84,16 +91,25 @@ fun App() {
                         val viewModel = koinViewModel<LoginViewModel>()
                         LoginScreenRoot(
                             viewModel = viewModel,
-                            onSignUpClick = {
-                                navController.navigate(Routes.SignUp)
-                            },
-                            onForgotClick = {
-                                navController.navigate(Routes.ForgotPassword)
+                            showSnackBar = { message ->
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(message = message)
+                                }
                             }
-                        )
+                        ) { route ->
+                            navController.navigate(route)
+                        }
                     }
                     composable<Routes.SignUp> {
-                        SignupScreenRoot()
+                        val viewModel = koinViewModel<SignupViewModel>()
+                        SignupScreenRoot(viewModel,
+                            showSnackBar = { message ->
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(message = message)
+                                }
+                            }) {
+                            navController.navigate(it)
+                        }
                     }
                     composable<Routes.ForgotPassword> {
                         ForgotPasswordRoot()
