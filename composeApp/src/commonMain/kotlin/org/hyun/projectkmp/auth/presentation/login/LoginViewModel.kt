@@ -64,11 +64,9 @@ class LoginViewModel(
     }
 
     fun getUser() {
-        val token = settings.getStringOrNull("access")
-        if (token.isNullOrEmpty()) return
         _state.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getMyInfo(token)
+            repository.getMyInfo()
                 .onSuccess {
                     _state.update { it.copy(isLoading = false) }
                     _effect.emit(UiEffect.NavigateTo(Routes.MainGraph))

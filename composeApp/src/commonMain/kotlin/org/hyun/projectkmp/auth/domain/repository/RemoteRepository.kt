@@ -16,5 +16,5 @@ interface RemoteRepository {
     suspend fun signUp(request: SignupRequest): Result<SignupResponse, DataError.Remote>
     suspend fun login(request: LoginRequest): Result<LoginResponse, DataError.Remote>
     suspend fun newPassword(request: ChangePasswordRequest): Result<ChangePasswordResponse, DataError.Remote>
-    suspend fun getMyInfo(token:String): Result<InfoResponse, DataError.Remote>
+    suspend fun getMyInfo(): Result<InfoResponse, DataError.Remote>
 }

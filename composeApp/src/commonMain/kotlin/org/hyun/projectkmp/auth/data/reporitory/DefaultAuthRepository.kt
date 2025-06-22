@@ -32,7 +32,7 @@ class DefaultAuthRepository(
         return dataSource.changePassword(request)
     }
 
-    override suspend fun getMyInfo(token:String): Result<InfoResponse, DataError.Remote> {
-       return dataSource.getInfo(token)
+    override suspend fun getMyInfo(): Result<InfoResponse, DataError.Remote> {
+       return dataSource.getInfo()
     }
 }

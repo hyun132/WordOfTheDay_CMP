@@ -28,5 +28,5 @@ interface RemoteAuthDataSource {
         email: String
     ): Result<CheckEmailResponse, DataError.Remote>
 
-    suspend fun getInfo(token:String): Result<InfoResponse, DataError.Remote>
+    suspend fun getInfo(): Result<InfoResponse, DataError.Remote>
 }

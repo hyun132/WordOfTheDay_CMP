@@ -61,10 +61,9 @@ class KtorRemoteAuthDataSource(
         }
     }
 
-    override suspend fun getInfo(token:String): Result<InfoResponse, DataError.Remote> {
+    override suspend fun getInfo(): Result<InfoResponse, DataError.Remote> {
         return safeCall {
             httpClient.get("$BASE_URL/auth/me"){
-                header("Authorization", "Bearer $token")
                 contentType(ContentType.Application.Json)
             }
         }
