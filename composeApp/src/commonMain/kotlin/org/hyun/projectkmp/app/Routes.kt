@@ -1,12 +1,5 @@
 package org.hyun.projectkmp.app
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Icon
-import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.DrawableResource
 import wordoftheday.composeapp.generated.resources.Res
@@ -45,6 +38,9 @@ sealed interface Routes {
 
     @Serializable
     data object Profile : Routes
+
+    @Serializable
+    data object CreateProfile : Routes
 }
 
 

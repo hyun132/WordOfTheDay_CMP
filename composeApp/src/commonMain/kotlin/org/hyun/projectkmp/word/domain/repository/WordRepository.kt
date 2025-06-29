@@ -1,5 +1,6 @@
 package org.hyun.projectkmp.word.domain.repository
 
+import org.hyun.projectkmp.app.Routes
 import org.hyun.projectkmp.core.domain.DataError
 import org.hyun.projectkmp.core.domain.Result
 import org.hyun.projectkmp.word.domain.Sentence
@@ -13,7 +14,10 @@ import org.hyun.projectkmp.word.domain.model.BookMarksRequestQuery
 import org.hyun.projectkmp.word.domain.model.LearningCompleteRequest
 import org.hyun.projectkmp.word.domain.model.LearningCompleteResponse
 import org.hyun.projectkmp.word.domain.LearningHistories
+import org.hyun.projectkmp.word.domain.model.CreateProfileRequest
+import org.hyun.projectkmp.word.domain.model.CreateProfileResponse
 import org.hyun.projectkmp.word.domain.model.LearningHistoriesRequest
+import org.hyun.projectkmp.word.domain.model.ProfileResponse
 import org.hyun.projectkmp.word.domain.model.WordRequestQuery
 
 interface WordRepository {
@@ -26,5 +30,7 @@ interface WordRepository {
     suspend fun getLearnedWordCount():Result<Long,DataError.Remote>
     suspend fun checkAnswer(requestQuery: AnswerCheckRequest):Result<AnswerResult,DataError.Remote>
     suspend fun saveLearningHistory(learningCompleteRequest: LearningCompleteRequest):Result<LearningCompleteResponse,DataError.Remote>
-    suspend fun getLearningHistories(learningCompleteRequest: LearningHistoriesRequest):Result<LearningHistories,DataError.Remote>
+    suspend fun getLearningHistories(learningHistoryRequest: LearningHistoriesRequest):Result<LearningHistories,DataError.Remote>
+    suspend fun createProfile(request:CreateProfileRequest):Result<CreateProfileResponse,DataError.Remote>
+    suspend fun getProfile():Result<ProfileResponse,DataError.Remote>
 }

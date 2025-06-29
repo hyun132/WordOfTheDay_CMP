@@ -21,9 +21,12 @@ import org.hyun.projectkmp.word.domain.model.AnswerCheckRequest
 import org.hyun.projectkmp.word.domain.model.AnswerResult
 import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.BookMarksRequestQuery
+import org.hyun.projectkmp.word.domain.model.CreateProfileRequest
+import org.hyun.projectkmp.word.domain.model.CreateProfileResponse
 import org.hyun.projectkmp.word.domain.model.LearningCompleteRequest
 import org.hyun.projectkmp.word.domain.model.LearningCompleteResponse
 import org.hyun.projectkmp.word.domain.model.LearningHistoriesRequest
+import org.hyun.projectkmp.word.domain.model.ProfileResponse
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
 import org.hyun.projectkmp.word.domain.model.WordRequestQuery
 
@@ -117,6 +120,21 @@ class KtorRemoteWordDataSource(
             httpClient.get("$BASE_URL/me/learning-history"){
                 parameter("yearMonth", request.yearMonth)
             }
+        }
+    }
+
+    override suspend fun createProfile(request: CreateProfileRequest): Result<CreateProfileResponse, DataError.Remote> {
+        return safeCall {
+            httpClient.post("$BASE_URL/profile"){
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+        }
+    }
+
+    override suspend fun getProfile(): Result<ProfileResponse, DataError.Remote> {
+        return safeCall {
+            httpClient.get("$BASE_URL/profile")
         }
     }
 }

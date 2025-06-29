@@ -10,9 +10,12 @@ import org.hyun.projectkmp.word.domain.model.AnswerCheckRequest
 import org.hyun.projectkmp.word.domain.model.AnswerResult
 import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.BookMarksRequestQuery
+import org.hyun.projectkmp.word.domain.model.CreateProfileRequest
+import org.hyun.projectkmp.word.domain.model.CreateProfileResponse
 import org.hyun.projectkmp.word.domain.model.LearningCompleteRequest
 import org.hyun.projectkmp.word.domain.model.LearningCompleteResponse
 import org.hyun.projectkmp.word.domain.model.LearningHistoriesRequest
+import org.hyun.projectkmp.word.domain.model.ProfileResponse
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
 import org.hyun.projectkmp.word.domain.model.WordRequestQuery
 
@@ -55,4 +58,10 @@ interface RemoteWordDataSource {
     suspend fun getLearningHistories(
         request: LearningHistoriesRequest
     ): Result<LearningHistoriesResponse, DataError.Remote>
+
+    suspend fun createProfile(
+        request: CreateProfileRequest
+    ): Result<CreateProfileResponse, DataError.Remote>
+
+    suspend fun getProfile(): Result<ProfileResponse, DataError.Remote>
 }

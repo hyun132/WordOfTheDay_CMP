@@ -6,20 +6,28 @@ import com.russhwolf.settings.string
 class LocalRepository(
     private val settings: Settings
 ) {
-    fun saveDifficulty(token: String) {
-        settings.string("difficulty", token)
+    fun saveDifficulty(difficulty: String) {
+        settings.string("difficulty", difficulty)
     }
 
     fun getDifficulty(): String? {
         return settings.getStringOrNull("difficulty")
     }
 
-    fun saveSubject(subject: String) {
-        settings.putString("subject", subject)
+    fun saveTopic(topic: String) {
+        settings.putString("subject", topic)
     }
 
     fun getSubject(): String? {
         return settings.getStringOrNull("subject")
+    }
+
+    fun saveName(name: String) {
+        settings.putString("name", name)
+    }
+
+    fun getName(): String? {
+        return settings.getStringOrNull("name")
     }
 
     fun saveToken(token: String) {

@@ -48,6 +48,8 @@ import org.hyun.projectkmp.word.presentation.learning.LearningScreenRoot
 import org.hyun.projectkmp.word.presentation.learning.LearningViewModel
 import org.hyun.projectkmp.word.presentation.profile.ProfileScreenRoot
 import org.hyun.projectkmp.word.presentation.profile.ProfileViewModel
+import org.hyun.projectkmp.word.presentation.profile.create.CreateProfileScreenRoot
+import org.hyun.projectkmp.word.presentation.profile.create.CreateProfileViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -128,8 +130,15 @@ fun App() {
                                 navController.navigate(
                                     Routes.Word(word = word)
                                 )
+                            },
+                            showSnackBar = { message ->
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(message = message)
+                                }
                             }
-                        )
+                        ){ route ->
+                            navController.navigate(route)
+                        }
                     }
 
                     composable<Routes.Word> {
@@ -170,6 +179,20 @@ fun App() {
                                 navController.navigateUp()
                             }
                         )
+                    }
+
+                    composable<Routes.CreateProfile> {
+                        val viewModel = koinViewModel<CreateProfileViewModel>()
+                        CreateProfileScreenRoot(
+                            viewModel = viewModel,
+                            showSnackBar = { message ->
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(message = message)
+                                }
+                            }
+                        ){ route ->
+                            navController.navigate(route)
+                        }
                     }
                 }
             }

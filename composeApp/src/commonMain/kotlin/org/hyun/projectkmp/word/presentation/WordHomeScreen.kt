@@ -17,6 +17,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,8 +27,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.hyun.projectkmp.app.Routes
 import org.hyun.projectkmp.core.presentation.DeepPurple
 import org.hyun.projectkmp.core.presentation.LightGray
+import org.hyun.projectkmp.core.presentation.UiEffect
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import wordoftheday.composeapp.generated.resources.Res
@@ -38,10 +41,21 @@ import wordoftheday.composeapp.generated.resources.learning_start
 @Composable
 fun WordHomeScreenRoot(
     onWordClick: (String) -> Unit,
-    viewModel: WordHomeViewModel = koinViewModel()
+    viewModel: WordHomeViewModel = koinViewModel(),
+    showSnackBar: (String) -> Unit,
+    navigate: (Routes) -> Unit
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect {
+            when (it) {
+                is UiEffect.NavigateTo -> navigate(it.destination)
+                is UiEffect.ShowError -> showSnackBar(it.message)
+            }
+        }
+    }
 
     WordHomeScreen(
         state = state,
