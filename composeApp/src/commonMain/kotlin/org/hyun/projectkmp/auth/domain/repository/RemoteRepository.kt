@@ -8,6 +8,10 @@ import org.hyun.projectkmp.auth.domain.dto.LoginRequest
 import org.hyun.projectkmp.auth.domain.dto.LoginResponse
 import org.hyun.projectkmp.auth.domain.dto.SignupRequest
 import org.hyun.projectkmp.auth.domain.dto.SignupResponse
+import org.hyun.projectkmp.auth.domain.dto.request.ResetPasswordRequest
+import org.hyun.projectkmp.auth.domain.dto.request.SendCodeRequest
+import org.hyun.projectkmp.auth.domain.dto.request.VerifyCodeRequest
+import org.hyun.projectkmp.auth.domain.dto.response.VerifyCodeResponse
 import org.hyun.projectkmp.core.domain.DataError
 import org.hyun.projectkmp.core.domain.Result
 
@@ -17,4 +21,7 @@ interface RemoteRepository {
     suspend fun login(request: LoginRequest): Result<LoginResponse, DataError.Remote>
     suspend fun newPassword(request: ChangePasswordRequest): Result<ChangePasswordResponse, DataError.Remote>
     suspend fun getMyInfo(): Result<InfoResponse, DataError.Remote>
+    suspend fun requestSendCode(request: SendCodeRequest): Result<String, DataError.Remote>
+    suspend fun verifyCode(request: VerifyCodeRequest): Result<VerifyCodeResponse, DataError.Remote>
+    suspend fun resetPassword(request: ResetPasswordRequest): Result<String, DataError.Remote>
 }

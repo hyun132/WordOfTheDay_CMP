@@ -31,9 +31,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
-import org.hyun.projectkmp.auth.presentation.forgot_password.ForgotPasswordRoot
 import org.hyun.projectkmp.auth.presentation.login.LoginScreenRoot
 import org.hyun.projectkmp.auth.presentation.login.LoginViewModel
+import org.hyun.projectkmp.auth.presentation.reset_password.ResetPasswordScreenRoot
+import org.hyun.projectkmp.auth.presentation.reset_password.ResetPasswordViewModel
 import org.hyun.projectkmp.auth.presentation.signup.SignupScreenRoot
 import org.hyun.projectkmp.auth.presentation.signup.SignupViewModel
 import org.hyun.projectkmp.core.presentation.DeepPurple
@@ -77,7 +78,7 @@ fun App() {
                     }
                 }
             },
-            snackbarHost = {SnackbarHost(hostState = snackbarHostState)}
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
         ) { paddingValue ->
             NavHost(
                 navController = navController,
@@ -104,7 +105,8 @@ fun App() {
                     }
                     composable<Routes.SignUp> {
                         val viewModel = koinViewModel<SignupViewModel>()
-                        SignupScreenRoot(viewModel,
+                        SignupScreenRoot(
+                            viewModel,
                             showSnackBar = { message ->
                                 coroutineScope.launch {
                                     snackbarHostState.showSnackbar(message = message)
@@ -113,8 +115,18 @@ fun App() {
                             navController.navigate(it)
                         }
                     }
-                    composable<Routes.ForgotPassword> {
-                        ForgotPasswordRoot()
+                    composable<Routes.ResetPassword> {
+                        val viewModel = koinViewModel<ResetPasswordViewModel>()
+                        ResetPasswordScreenRoot(
+                            viewModel = viewModel,
+                            showSnackBar = { message ->
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(message = message)
+                                }
+                            }
+                        ) {
+                            navController.navigate(it)
+                        }
                     }
                 }
 
@@ -136,7 +148,7 @@ fun App() {
                                     snackbarHostState.showSnackbar(message = message)
                                 }
                             }
-                        ){ route ->
+                        ) { route ->
                             navController.navigate(route)
                         }
                     }
@@ -190,7 +202,7 @@ fun App() {
                                     snackbarHostState.showSnackbar(message = message)
                                 }
                             }
-                        ){ route ->
+                        ) { route ->
                             navController.navigate(route)
                         }
                     }

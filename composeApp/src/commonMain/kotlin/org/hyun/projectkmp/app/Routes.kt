@@ -22,7 +22,7 @@ sealed interface Routes {
     data object SignUp : Routes
 
     @Serializable
-    data object ForgotPassword : Routes
+    data object ResetPassword : Routes
 
     @Serializable
     data object Home : Routes

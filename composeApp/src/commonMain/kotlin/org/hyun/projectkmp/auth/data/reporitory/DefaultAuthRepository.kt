@@ -9,6 +9,10 @@ import org.hyun.projectkmp.auth.domain.dto.LoginRequest
 import org.hyun.projectkmp.auth.domain.dto.LoginResponse
 import org.hyun.projectkmp.auth.domain.dto.SignupRequest
 import org.hyun.projectkmp.auth.domain.dto.SignupResponse
+import org.hyun.projectkmp.auth.domain.dto.request.ResetPasswordRequest
+import org.hyun.projectkmp.auth.domain.dto.request.SendCodeRequest
+import org.hyun.projectkmp.auth.domain.dto.request.VerifyCodeRequest
+import org.hyun.projectkmp.auth.domain.dto.response.VerifyCodeResponse
 import org.hyun.projectkmp.auth.domain.repository.RemoteRepository
 import org.hyun.projectkmp.core.domain.DataError
 import org.hyun.projectkmp.core.domain.Result
@@ -33,6 +37,18 @@ class DefaultAuthRepository(
     }
 
     override suspend fun getMyInfo(): Result<InfoResponse, DataError.Remote> {
-       return dataSource.getInfo()
+        return dataSource.getInfo()
+    }
+
+    override suspend fun requestSendCode(request: SendCodeRequest): Result<String, DataError.Remote> {
+        return dataSource.requestSendCode(request)
+    }
+
+    override suspend fun verifyCode(request: VerifyCodeRequest): Result<VerifyCodeResponse, DataError.Remote> {
+        return dataSource.verifyCode(request)
+    }
+
+    override suspend fun resetPassword(request: ResetPasswordRequest): Result<String, DataError.Remote> {
+        return dataSource.resetPassword(request)
     }
 }
