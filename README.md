@@ -7,7 +7,7 @@ Android, iOS, Desktop에서 동일한 코어 로직으로 동작하며, 텍스�
 
 - Kotlin Multiplatform (Android / iOS / Desktop)
 - Jetpack Compose Multiplatform (UI)
-- Cloud Speech-to-Text API + SpeechRecognizer (Android 음성 인식) / SFSpeechRecognizer (iOS 음성 인식)
+- SpeechRecognizer (Android 음성 인식) / SFSpeechRecognizer (iOS 음성 인식)
 - Koin (DI)
 - Ktor (네트워크 통신)
 - Gradle Kotlin DSL
