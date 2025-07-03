@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -95,6 +96,7 @@ class LoginViewModel(
                 settings.putString("access", it.accessToken)
                 settings.putString("refresh", it.refreshToken)
                 _state.update { it.copy(isLoggedIn = true, isLoading = false) }
+                delay(200)
                 _effect.emit(UiEffect.NavigateTo(Routes.MainGraph))
             }.onError { e ->
                 _state.update { it.copy(isLoading = false) }

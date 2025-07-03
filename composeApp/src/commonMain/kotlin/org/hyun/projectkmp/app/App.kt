@@ -100,7 +100,12 @@ fun App() {
                                 }
                             }
                         ) { route ->
-                            navController.navigate(route)
+                            navController.navigate(route){
+                                if(route is Routes.MainGraph) {
+                                    popUpTo(0) { inclusive = true }  // 백스택의 루트까지 모두 제거
+                                    launchSingleTop = true
+                                }
+                            }
                         }
                     }
                     composable<Routes.SignUp> {

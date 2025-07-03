@@ -4,7 +4,6 @@ import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpTimeout
-import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -13,8 +12,6 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.plugin
-import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
@@ -56,6 +53,16 @@ object HttpClientFactory {
                             Settings().getString("refresh", "")
                         )
 //                        bearerTokenStorage.last()
+                    }
+                    refreshTokens {
+                        try {
+                            BearerTokens(
+                                Settings().getString("access", "none"),
+                                Settings().getString("refresh", "")
+                            )
+                        } catch (e: Exception) {
+                            null // Indicate refresh failure
+                        }
                     }
                 }
             }
