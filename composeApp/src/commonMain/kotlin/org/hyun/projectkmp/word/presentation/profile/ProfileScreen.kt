@@ -56,7 +56,7 @@ fun ProfileScreen(
     ) {
 
         Text(
-            text = "username",
+            text = state.username,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
                 .padding(8.dp)
@@ -147,5 +147,21 @@ fun ProfileScreen(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(20.dp))
+        Text("difficulty")
+        Text(
+            text = state.difficulty.name,
+            modifier = Modifier.fillMaxWidth().padding(20.dp),
+            fontSize = 20.sp
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+        Text("subject/topic")
+        Text(
+            text = state.topic,
+            modifier = Modifier.fillMaxWidth().padding(20.dp),
+            fontSize = 20.sp
+        )
     }
 }
