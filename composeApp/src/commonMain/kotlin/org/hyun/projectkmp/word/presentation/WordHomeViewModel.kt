@@ -112,6 +112,7 @@ class WordHomeViewModel(
                     it.copy(
                         isLoading = false,
                         word = "Today's Word",
+                        meaning = "오늘의 단어",
                         errorMessage = error.toUiText()
                     )
                 }

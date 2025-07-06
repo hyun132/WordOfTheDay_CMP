@@ -32,7 +32,6 @@ fun LineProgressBar(
         Row(
             modifier = Modifier
                 .weight(progress / total.toFloat()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             repeat(progress) {
                 Dot(DeepPurple)
@@ -42,7 +41,6 @@ fun LineProgressBar(
             Row(
                 modifier = Modifier
                     .weight(1 - progress / total.toFloat()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 repeat(total - progress) {
                     Dot(LightGray)
