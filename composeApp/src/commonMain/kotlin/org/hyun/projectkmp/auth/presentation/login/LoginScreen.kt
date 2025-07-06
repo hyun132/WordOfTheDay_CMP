@@ -29,11 +29,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.hyun.projectkmp.AudioPermissionManager
 import org.hyun.projectkmp.app.Routes
 import org.hyun.projectkmp.core.presentation.DeepPurple
 import org.hyun.projectkmp.core.presentation.DefaultButton
 import org.hyun.projectkmp.core.presentation.UiEffect
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.koinInject
 import wordoftheday.composeapp.generated.resources.Res
 import wordoftheday.composeapp.generated.resources.eye
 import wordoftheday.composeapp.generated.resources.eye_slash
@@ -45,7 +47,6 @@ fun LoginScreenRoot(
     navigateTo: (Routes) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {

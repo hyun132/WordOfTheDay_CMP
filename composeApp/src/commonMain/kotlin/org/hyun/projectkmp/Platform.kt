@@ -5,3 +5,7 @@ interface Platform {
 }
 
 expect fun getPlatform(): Platform
+
+expect class AudioPermissionManager {
+    suspend fun requestPermission(): Boolean
+}
