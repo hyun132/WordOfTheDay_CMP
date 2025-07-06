@@ -3,6 +3,7 @@ package org.hyun.projectkmp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import org.hyun.projectkmp.app.App
+import org.hyun.projectkmp.core.presentation.setComposeWindowProvider
 import org.hyun.projectkmp.di.initKoin
 
 fun main() = application {
@@ -11,6 +12,9 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "WordOfTheDay",
     ) {
+        setComposeWindowProvider {
+            window
+        }
         App()
     }
 }

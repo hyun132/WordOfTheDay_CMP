@@ -9,10 +9,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import org.hyun.projectkmp.app.App
+import org.hyun.projectkmp.core.presentation.setActivityProvider
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setActivityProvider { this }
         val permissionManager = AudioPermissionManager(this) // Activity 전달
         lifecycleScope.launch {
             val granted = permissionManager.requestPermission()

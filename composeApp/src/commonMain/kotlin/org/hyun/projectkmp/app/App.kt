@@ -17,6 +17,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -40,6 +42,8 @@ import org.hyun.projectkmp.auth.presentation.signup.SignupScreenRoot
 import org.hyun.projectkmp.auth.presentation.signup.SignupViewModel
 import org.hyun.projectkmp.core.presentation.DeepPurple
 import org.hyun.projectkmp.core.presentation.LightGray
+import org.hyun.projectkmp.core.presentation.ToastDurationType
+import org.hyun.projectkmp.core.presentation.ToastManager
 import org.hyun.projectkmp.word.presentation.WordHomeScreenRoot
 import org.hyun.projectkmp.word.presentation.WordHomeViewModel
 import org.hyun.projectkmp.word.presentation.bookmark.BookMarkListScreenRoot
@@ -67,6 +71,7 @@ fun App() {
         val bottomNavRoutes = bottomNavItems.map { it.label }
         val snackbarHostState = remember { SnackbarHostState() }
         val coroutineScope = rememberCoroutineScope()
+        val toastManager by remember { mutableStateOf(ToastManager()) }
         Scaffold(
             bottomBar = {
                 AnimatedVisibility(
@@ -96,9 +101,10 @@ fun App() {
                         LoginScreenRoot(
                             viewModel = viewModel,
                             showSnackBar = { message ->
-                                coroutineScope.launch {
-                                    snackbarHostState.showSnackbar(message = message)
-                                }
+//                                coroutineScope.launch {
+//                                    snackbarHostState.showSnackbar(message = message)
+//                                }
+                                toastManager.showToast(message,ToastDurationType.SHORT)
                             }
                         ) { route ->
                             navController.navigate(route){
@@ -114,9 +120,10 @@ fun App() {
                         SignupScreenRoot(
                             viewModel,
                             showSnackBar = { message ->
-                                coroutineScope.launch {
-                                    snackbarHostState.showSnackbar(message = message)
-                                }
+//                                coroutineScope.launch {
+//                                    snackbarHostState.showSnackbar(message = message)
+//                                }
+                                toastManager.showToast(message,ToastDurationType.SHORT)
                             }) {
                             navController.navigate(it)
                         }
@@ -150,9 +157,10 @@ fun App() {
                                 )
                             },
                             showSnackBar = { message ->
-                                coroutineScope.launch {
-                                    snackbarHostState.showSnackbar(message = message)
-                                }
+//                                coroutineScope.launch {
+//                                    snackbarHostState.showSnackbar(message = message)
+//                                }
+                                toastManager.showToast(message,ToastDurationType.SHORT)
                             }
                         ) { route ->
                             navController.navigate(route)
