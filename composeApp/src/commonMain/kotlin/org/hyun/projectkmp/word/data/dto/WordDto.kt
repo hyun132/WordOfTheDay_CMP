@@ -4,5 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class WordDto(
-    val word: String? = null
+    val word: String? = null,
+    val meaning:String? = null,
 )

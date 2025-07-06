@@ -103,7 +103,8 @@ class WordHomeViewModel(
                     it.copy(
                         isLoading = false,
                         errorMessage = null,
-                        word = word.word
+                        word = word.word,
+                        meaning = word.meaning
                     )
                 }
             }
@@ -131,7 +132,8 @@ class WordHomeViewModel(
                     it.copy(
                         isLoading = false,
                         errorMessage = null,
-                        word = word.word
+                        word = word.word,
+                        meaning = word.meaning
                     )
                 }
             }

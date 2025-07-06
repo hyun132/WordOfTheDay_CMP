@@ -10,7 +10,8 @@ import org.hyun.projectkmp.word.domain.Word
 
 fun WordDto.toWord(): Word {
     return Word(
-        word = word ?: ""
+        word = word ?: "",
+        meaning = meaning ?: ""
     )
 }
 
@@ -28,7 +29,7 @@ fun SentenceDto.toSentence(): Sentence {
     )
 }
 
-fun LearningHistoryDto.toLearningHistory():LearningHistory{
+fun LearningHistoryDto.toLearningHistory(): LearningHistory {
     return LearningHistory(
         learnedAt = learnedAt,
         word = word
