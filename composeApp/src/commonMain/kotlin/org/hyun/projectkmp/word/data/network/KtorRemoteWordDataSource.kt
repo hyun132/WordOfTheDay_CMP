@@ -61,6 +61,7 @@ class KtorRemoteWordDataSource(
         return safeCall {
             httpClient.get("$BASE_URL/sentence") {
                 parameter("word", query.word)
+                parameter("meaning", query.meaning)
                 parameter("difficulty", query.difficulty.name)
             }
         }

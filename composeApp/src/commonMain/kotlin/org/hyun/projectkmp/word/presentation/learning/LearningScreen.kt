@@ -55,8 +55,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import org.hyun.projectkmp.core.presentation.DeepPurple
 import org.hyun.projectkmp.core.presentation.LightGray
 import org.hyun.projectkmp.core.presentation.LightPurple
-import org.hyun.projectkmp.core.presentation.MediumPurple
 import org.hyun.projectkmp.word.domain.Mode
+import org.hyun.projectkmp.word.presentation.WordHomeState
+import org.hyun.projectkmp.word.presentation.WordHomeViewModel
 import org.hyun.projectkmp.word.presentation.components.LineProgressBar
 import org.jetbrains.compose.resources.imageResource
 import org.jetbrains.compose.resources.painterResource
@@ -77,10 +78,16 @@ import wordoftheday.composeapp.generated.resources.tab_to_next
 @Composable
 fun LearningScreenRoot(
     viewModel: LearningViewModel,
-    onBackClick: () -> Unit
+    wordState: WordHomeState,
+    onBackClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    LearningScreen(state = state) { action ->
+
+    LaunchedEffect(wordState) {
+        viewModel.getSentences(wordState.word, wordState.meaning, wordState.difficulty)
+    }
+
+    LearningScreen(state = state, word = wordState.word) { action ->
         when (action) {
             is LearningAction.OnBackClick -> {
                 onBackClick()
@@ -93,14 +100,14 @@ fun LearningScreenRoot(
 }
 
 @Composable
-fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
+fun LearningScreen(state: LeaningState, word: String, onAction: (LearningAction) -> Unit) {
     Box(modifier = Modifier.fillMaxSize().background(LightPurple)) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            ActionBar(onAction, state)
+            ActionBar(onAction, word, state)
             if (state.isLoading) {
                 Box(
                     modifier = Modifier
@@ -130,6 +137,7 @@ fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
                     SentenceContents(
                         state = state,
                         pagerState = pagerState,
+                        word = word,
                         onAction = onAction,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -144,6 +152,7 @@ fun LearningScreen(state: LeaningState, onAction: (LearningAction) -> Unit) {
 @Composable
 fun ActionBar(
     onAction: (LearningAction) -> Unit,
+    word: String,
     state: LeaningState
 ) {
     Row(
@@ -163,7 +172,7 @@ fun ActionBar(
                 .size(32.dp)
         )
         Text(
-            text = state.word,
+            text = word,
             modifier = Modifier
                 .weight(1f),
             textAlign = TextAlign.Center,
@@ -186,6 +195,7 @@ fun ActionBar(
 fun SentenceContents(
     state: LeaningState,
     pagerState: PagerState,
+    word: String,
     onAction: (LearningAction) -> Unit,
     modifier: Modifier
 ) {
@@ -235,7 +245,7 @@ fun SentenceContents(
                             },
                             keyboardActions = KeyboardActions(
                                 onDone = {
-                                    onAction(LearningAction.OnSubmit)
+                                    onAction(LearningAction.OnSubmit(word))
                                 }
                             ),
                             keyboardOptions = KeyboardOptions.Default.copy(
@@ -251,7 +261,7 @@ fun SentenceContents(
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedButton(
                             onClick = {
-                                onAction(LearningAction.OnSubmit)
+                                onAction(LearningAction.OnSubmit(word))
                             },
                             border = BorderStroke(width = 2.dp, color = LightGray),
                             shape = RoundedCornerShape(12.dp),
@@ -275,7 +285,7 @@ fun SentenceContents(
                             else if (currentItem.isCorrect == true) imageResource(Res.drawable.rotate_left)
                             else imageResource(Res.drawable.play)
                         Button(
-                            onClick = { onAction(LearningAction.OnAudioStartClick) },
+                            onClick = { onAction(LearningAction.OnAudioStartClick(word)) },
                             colors = ButtonDefaults.buttonColors(containerColor = LightPurple)
                         ) {
                             Icon(

@@ -3,18 +3,13 @@ package org.hyun.projectkmp.word.presentation.learning
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.hyun.projectkmp.VoiceRecognizer
-import org.hyun.projectkmp.app.Routes
 import org.hyun.projectkmp.core.domain.onError
 import org.hyun.projectkmp.core.domain.onSuccess
 import org.hyun.projectkmp.core.presentation.toUiText
@@ -32,21 +27,9 @@ class LearningViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private var silenceTimerJob: Job? = null
-    private val word = savedStateHandle.toRoute<Routes.Word>().word
 
     private val _state = MutableStateFlow(LeaningState())
     val state: StateFlow<LeaningState> = _state
-        .onStart {
-            _state.update {
-                it.copy(word = word)
-            }
-            getSentences()
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = _state.value
-        )
 
     fun onAction(action: LearningAction) {
         when (action) {
@@ -86,6 +69,7 @@ class LearningViewModel(
                 val progress = state.value.progress
                 val item = state.value.sentenceItems[progress]
                 submitAnswer(
+                    word = action.word,
                     progress = progress,
                     mode = state.value.mode,
                     origin = item.sentence,
@@ -110,7 +94,7 @@ class LearningViewModel(
             }
 
             is LearningAction.OnAudioStartClick -> {
-                toggleRecognition()
+                toggleRecognition(action.word)
             }
 
             else -> Unit
@@ -163,12 +147,13 @@ class LearningViewModel(
         }
     }
 
-    private fun getSentences() {
+    fun getSentences(word: String, meaning: String, difficulty: Difficulty) {
         viewModelScope.launch {
             repository.getSentences(
                 SentencesRequestQuery(
                     word = word,
-                    difficulty = Difficulty.BEGINNER
+                    meaning = meaning,
+                    difficulty = difficulty
                 )
             )
                 .onSuccess { result ->
@@ -193,7 +178,7 @@ class LearningViewModel(
         }
     }
 
-    fun submitAnswer(progress: Int, mode: Mode, origin: String, userInput: String) {
+    fun submitAnswer(word: String, progress: Int, mode: Mode, origin: String, userInput: String) {
         viewModelScope.launch {
             repository.checkAnswer(
                 AnswerCheckRequest(
@@ -213,7 +198,7 @@ class LearningViewModel(
                             sentenceItems = updatedItems
                         )
                     }
-                    if (isDone) saveLearningCompleted()
+                    if (isDone) saveLearningCompleted(word)
                 }
                 .onError { e ->
                     _state.update {
@@ -226,7 +211,7 @@ class LearningViewModel(
         }
     }
 
-    fun saveLearningCompleted() {
+    fun saveLearningCompleted(word: String) {
         viewModelScope.launch {
             _state.update {
                 it.copy(
@@ -257,7 +242,7 @@ class LearningViewModel(
         }
     }
 
-    fun toggleRecognition() {
+    fun toggleRecognition(word: String) {
         if (recognizer.isRecognizing()) {
             recognizer.stopRecognition()
             silenceTimerJob?.cancel()
@@ -270,6 +255,7 @@ class LearningViewModel(
                     val progress = state.value.progress
                     val item = state.value.sentenceItems[progress]
                     submitAnswer(
+                        word = word,
                         progress = progress,
                         mode = state.value.mode,
                         origin = item.sentence,

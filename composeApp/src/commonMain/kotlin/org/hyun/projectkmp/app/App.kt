@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,7 +34,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
-import org.hyun.projectkmp.AudioPermissionManager
 import org.hyun.projectkmp.auth.presentation.login.LoginScreenRoot
 import org.hyun.projectkmp.auth.presentation.login.LoginViewModel
 import org.hyun.projectkmp.auth.presentation.reset_password.ResetPasswordScreenRoot
@@ -104,11 +104,11 @@ fun App() {
 //                                coroutineScope.launch {
 //                                    snackbarHostState.showSnackbar(message = message)
 //                                }
-                                toastManager.showToast(message,ToastDurationType.SHORT)
+                                toastManager.showToast(message, ToastDurationType.SHORT)
                             }
                         ) { route ->
-                            navController.navigate(route){
-                                if(route is Routes.MainGraph) {
+                            navController.navigate(route) {
+                                if (route is Routes.MainGraph) {
                                     popUpTo(0) { inclusive = true }  // 백스택의 루트까지 모두 제거
                                     launchSingleTop = true
                                 }
@@ -123,7 +123,7 @@ fun App() {
 //                                coroutineScope.launch {
 //                                    snackbarHostState.showSnackbar(message = message)
 //                                }
-                                toastManager.showToast(message,ToastDurationType.SHORT)
+                                toastManager.showToast(message, ToastDurationType.SHORT)
                             }) {
                             navController.navigate(it)
                         }
@@ -160,7 +160,7 @@ fun App() {
 //                                coroutineScope.launch {
 //                                    snackbarHostState.showSnackbar(message = message)
 //                                }
-                                toastManager.showToast(message,ToastDurationType.SHORT)
+                                toastManager.showToast(message, ToastDurationType.SHORT)
                             }
                         ) { route ->
                             navController.navigate(route)
@@ -168,9 +168,11 @@ fun App() {
                     }
 
                     composable<Routes.Word> {
+                        val homeViewModel = it.sharedKoinViewModel<WordHomeViewModel>(navController)
                         val viewModel = koinViewModel<LearningViewModel>()
                         LearningScreenRoot(
                             viewModel = viewModel,
+                            wordState = homeViewModel.state.collectAsState().value,
                             onBackClick = {
                                 navController.navigateUp()
                             }

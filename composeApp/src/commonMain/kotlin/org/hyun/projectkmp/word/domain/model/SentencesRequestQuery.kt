@@ -5,6 +5,7 @@ import org.hyun.projectkmp.word.domain.Difficulty
 
 @Serializable
 data class SentencesRequestQuery(
-    val word:String,
-    val difficulty: Difficulty
+    val word: String,
+    val difficulty: Difficulty,
+    val meaning: String
 )
