@@ -44,7 +44,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -57,7 +56,7 @@ import org.hyun.projectkmp.core.presentation.LightGray
 import org.hyun.projectkmp.core.presentation.LightPurple
 import org.hyun.projectkmp.word.domain.Mode
 import org.hyun.projectkmp.word.presentation.WordHomeState
-import org.hyun.projectkmp.word.presentation.WordHomeViewModel
+import org.hyun.projectkmp.word.presentation.components.ActionBar
 import org.hyun.projectkmp.word.presentation.components.LineProgressBar
 import org.jetbrains.compose.resources.imageResource
 import org.jetbrains.compose.resources.painterResource
@@ -107,7 +106,7 @@ fun LearningScreen(state: LeaningState, word: String, onAction: (LearningAction)
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            ActionBar(onAction, word, state)
+            ActionbarContents(word, state.mode, onAction)
             if (state.isLoading) {
                 Box(
                     modifier = Modifier
@@ -150,45 +149,35 @@ fun LearningScreen(state: LeaningState, word: String, onAction: (LearningAction)
 }
 
 @Composable
-fun ActionBar(
-    onAction: (LearningAction) -> Unit,
+fun ActionbarContents(
     word: String,
-    state: LeaningState
+    mode: Mode,
+    onAction: (LearningAction) -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = Color.White, shape = RoundedCornerShape(12.dp))
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = Icons.Filled.ArrowBack,
-            contentDescription = "",
-            modifier = Modifier
-                .clickable {
-                    onAction(LearningAction.OnBackClick)
-                }
-                .size(32.dp)
-        )
-        Text(
-            text = word,
-            modifier = Modifier
-                .weight(1f),
-            textAlign = TextAlign.Center,
-            color = DeepPurple,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-        Text(
-            text = if (state.mode == Mode.TEXT) Mode.VOICE.name else Mode.TEXT.name,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .clickable {
-                    onAction(LearningAction.OnModeClick)
-                }
-        )
-    }
+    ActionBar(
+        leftIcon = {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "",
+                modifier = Modifier
+                    .clickable {
+                        onAction(LearningAction.OnBackClick)
+                    }
+                    .size(32.dp)
+            )
+        },
+        title = word,
+        rightIcon = {
+            Text(
+                text = if (mode == Mode.TEXT) Mode.VOICE.name else Mode.TEXT.name,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .clickable {
+                        onAction(LearningAction.OnModeClick)
+                    }
+            )
+        }
+    )
 }
 
 @Composable
