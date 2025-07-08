@@ -12,15 +12,21 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import org.hyun.projectkmp.auth.domain.dto.LoginResponse
 
 object HttpClientFactory {
 
-    val bearerTokenStorage = mutableListOf<BearerTokens>()
+    const val BASE_URL = "http://10.0.2.2:8080/api"
 
+    //private const val BASE_URL = "http://211.209.109.153:8080/api"
     fun create(engine: HttpClientEngine): HttpClient {
         return HttpClient(engine) {
             install(ContentNegotiation) {
@@ -52,16 +58,34 @@ object HttpClientFactory {
                             Settings().getString("access", "default"),
                             Settings().getString("refresh", "")
                         )
-//                        bearerTokenStorage.last()
                     }
                     refreshTokens {
                         try {
-                            BearerTokens(
-                                Settings().getString("access", "none"),
-                                Settings().getString("refresh", "")
-                            )
+                            val refreshToken = Settings().getString("refresh", "")
+
+                            val responseStr = client.post("${BASE_URL}/api/auth/refresh") {
+                                header("Authorization", "Bearer $refreshToken")
+                            }.bodyAsText()
+
+                            if (response.status.isSuccess()) {
+                                val tokenPair = Json.decodeFromString<LoginResponse>(responseStr)
+                                val newAccess = tokenPair.accessToken
+                                val newRefresh = tokenPair.refreshToken
+
+                                // 2-2. 새로운 토큰 저장
+                                Settings().putString("access", newAccess)
+                                Settings().putString("refresh", newRefresh)
+
+                                // 2-3. 새 토큰 리턴
+                                BearerTokens(newAccess, newRefresh)
+                            } else {
+                                BearerTokens(
+                                    Settings().getString("access", ""),
+                                    Settings().getString("refresh", "")
+                                )
+                            }
                         } catch (e: Exception) {
-                            null // Indicate refresh failure
+                            null
                         }
                     }
                 }

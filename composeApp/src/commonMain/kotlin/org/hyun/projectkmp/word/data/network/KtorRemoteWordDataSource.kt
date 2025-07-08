@@ -10,6 +10,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import org.hyun.projectkmp.core.data.HttpClientFactory.BASE_URL
 import org.hyun.projectkmp.core.data.safeCall
 import org.hyun.projectkmp.core.domain.DataError
 import org.hyun.projectkmp.core.domain.Result
@@ -29,9 +30,6 @@ import org.hyun.projectkmp.word.domain.model.LearningHistoriesRequest
 import org.hyun.projectkmp.word.domain.model.ProfileResponse
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
 import org.hyun.projectkmp.word.domain.model.WordRequestQuery
-
-private const val BASE_URL = "http://10.0.2.2:8080/api"
-//private const val BASE_URL = "http://211.209.109.153:8080/api"
 
 class KtorRemoteWordDataSource(
     private val httpClient: HttpClient

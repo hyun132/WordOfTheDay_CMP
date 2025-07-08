@@ -40,15 +40,17 @@ class KtorRemoteAuthDataSource(
     }
 
     override suspend fun login(request: LoginRequest): Result<LoginResponse, DataError.Remote> {
-        return safeCall {
-            val authProvider = httpClient.authProvider<BearerAuthProvider>()
-            requireNotNull(authProvider)
-            authProvider.clearToken()
+        val result = safeCall<LoginResponse> {
+
             httpClient.post("$BASE_URL/auth/login") {
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }
         }
+        val authProvider = httpClient.authProvider<BearerAuthProvider>()
+        requireNotNull(authProvider)
+        authProvider.clearToken()
+        return result
     }
 
     override suspend fun changePassword(request: ChangePasswordRequest): Result<ChangePasswordResponse, DataError.Remote> {
