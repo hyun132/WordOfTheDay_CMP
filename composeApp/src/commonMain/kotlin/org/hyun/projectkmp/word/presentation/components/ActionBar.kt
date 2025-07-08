@@ -18,9 +18,9 @@ import org.hyun.projectkmp.core.presentation.DeepPurple
 
 @Composable
 fun ActionBar(
-    leftIcon: @Composable () -> Unit,
+    leftIcon: @Composable () -> Unit = {},
     title: String,
-    rightIcon: @Composable () -> Unit
+    rightIcon: @Composable () -> Unit = {}
 ) {
     Row(
         modifier = Modifier

@@ -33,6 +33,9 @@ class ProfileViewModel(
 
     fun onAction(action: ProfileAction) {
         when (action) {
+            is ProfileAction.OnEditClick -> {
+                //click...
+            }
             else -> Unit
         }
     }

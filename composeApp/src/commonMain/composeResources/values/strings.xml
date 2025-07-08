@@ -24,6 +24,8 @@
     <string name="tab_to_next">Tab to next</string>
     <string name="submit">submit</string>
 
+    <string name="learning_profile">Learning Profile</string>
+
     <!--    login    -->
     <string name="login_failed">Invalid email or password. Please try again.</string>
     <string name="passwords_not_match">Passwords do not match.</string>
