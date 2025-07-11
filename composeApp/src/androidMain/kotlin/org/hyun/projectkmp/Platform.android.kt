@@ -1,18 +1,16 @@
 package org.hyun.projectkmp
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.hyun.projectkmp.word.data.local.WordRoomDatabase
 import kotlin.coroutines.resume
 
 class AndroidPlatform : Platform {
@@ -39,4 +37,14 @@ actual class AudioPermissionManager(private val activity: Activity) {
             cont.resume(false) // 임시로 false 반환
         }
     }
+}
+
+fun getDatabaseBuilder(context: Context): RoomDatabase.Builder<WordRoomDatabase> {
+    val appContext = context.applicationContext
+    val dbFile = appContext.getDatabasePath("word_database.db")
+
+    return Room.databaseBuilder<WordRoomDatabase>(
+        context = appContext,
+        name = dbFile.absolutePath,
+    )
 }

@@ -9,6 +9,8 @@ import org.hyun.projectkmp.auth.presentation.login.LoginViewModel
 import org.hyun.projectkmp.auth.presentation.reset_password.ResetPasswordViewModel
 import org.hyun.projectkmp.auth.presentation.signup.SignupViewModel
 import org.hyun.projectkmp.core.data.HttpClientFactory
+import org.hyun.projectkmp.word.data.local.WordDao
+import org.hyun.projectkmp.word.data.local.WordRoomDatabase
 import org.hyun.projectkmp.word.data.network.KtorRemoteWordDataSource
 import org.hyun.projectkmp.word.data.network.RemoteWordDataSource
 import org.hyun.projectkmp.word.data.repository.DefaultWordRepository
@@ -30,6 +32,8 @@ import org.koin.dsl.module
 expect val platformModule: Module
 
 val sharedModule = module {
+    single<WordDao> { get<WordRoomDatabase>().wordDao() }
+
     single { HttpClientFactory.create(get()) }
     singleOf(::KtorRemoteWordDataSource).bind<RemoteWordDataSource>()
     singleOf(::DefaultWordRepository).bind<WordRepository>()
@@ -43,7 +47,7 @@ val sharedModule = module {
     viewModelOf(::HistoryViewModel)
     viewModelOf(::BookmarkViewModel)
     viewModelOf(::ProfileViewModel)
-    viewModel { LearningViewModel(get(),get(),get()) }
+    viewModel { LearningViewModel(get(), get(), get()) }
     viewModelOf(::LoginViewModel)
     viewModelOf(::SignupViewModel)
     viewModelOf(::CreateProfileViewModel)
