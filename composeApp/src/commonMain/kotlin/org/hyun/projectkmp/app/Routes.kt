@@ -41,6 +41,9 @@ sealed interface Routes {
 
     @Serializable
     data object CreateProfile : Routes
+
+    @Serializable
+    data object UpdateProfile : Routes
 }
 
 

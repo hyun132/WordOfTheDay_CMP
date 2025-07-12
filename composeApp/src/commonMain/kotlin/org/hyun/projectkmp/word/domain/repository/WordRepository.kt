@@ -18,6 +18,7 @@ import org.hyun.projectkmp.word.domain.model.CreateProfileRequest
 import org.hyun.projectkmp.word.domain.model.CreateProfileResponse
 import org.hyun.projectkmp.word.domain.model.LearningHistoriesRequest
 import org.hyun.projectkmp.word.domain.model.ProfileResponse
+import org.hyun.projectkmp.word.domain.model.UpdateProfileRequest
 import org.hyun.projectkmp.word.domain.model.WordRequestQuery
 
 interface WordRepository {
@@ -33,4 +34,5 @@ interface WordRepository {
     suspend fun getLearningHistories(learningHistoryRequest: LearningHistoriesRequest):Result<LearningHistories,DataError.Remote>
     suspend fun createProfile(request:CreateProfileRequest):Result<CreateProfileResponse,DataError.Remote>
     suspend fun getProfile():Result<ProfileResponse,DataError.Remote>
+    suspend fun updateProfile(request: UpdateProfileRequest):Result<ProfileResponse,DataError.Remote>
 }

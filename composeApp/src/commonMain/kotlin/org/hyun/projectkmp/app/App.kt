@@ -56,6 +56,8 @@ import org.hyun.projectkmp.word.presentation.profile.ProfileScreenRoot
 import org.hyun.projectkmp.word.presentation.profile.ProfileViewModel
 import org.hyun.projectkmp.word.presentation.profile.create.CreateProfileScreenRoot
 import org.hyun.projectkmp.word.presentation.profile.create.CreateProfileViewModel
+import org.hyun.projectkmp.word.presentation.profile.update.UpdateProfileScreenRoot
+import org.hyun.projectkmp.word.presentation.profile.update.UpdateProfileViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -203,15 +205,33 @@ fun App() {
                         val viewModel = koinViewModel<ProfileViewModel>()
                         ProfileScreenRoot(
                             viewModel = viewModel,
-                            onBackClick = {
-                                navController.navigateUp()
+                            showSnackBar = { message ->
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(message = message)
+                                }
                             }
-                        )
+                        ){ route ->
+                            navController.navigate(route)
+                        }
                     }
 
                     composable<Routes.CreateProfile> {
                         val viewModel = koinViewModel<CreateProfileViewModel>()
                         CreateProfileScreenRoot(
+                            viewModel = viewModel,
+                            showSnackBar = { message ->
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(message = message)
+                                }
+                            }
+                        ) { route ->
+                            navController.navigate(route)
+                        }
+                    }
+
+                    composable<Routes.UpdateProfile> {
+                        val viewModel = koinViewModel<UpdateProfileViewModel>()
+                        UpdateProfileScreenRoot(
                             viewModel = viewModel,
                             showSnackBar = { message ->
                                 coroutineScope.launch {

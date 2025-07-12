@@ -17,6 +17,7 @@ import org.hyun.projectkmp.word.domain.model.LearningCompleteResponse
 import org.hyun.projectkmp.word.domain.model.LearningHistoriesRequest
 import org.hyun.projectkmp.word.domain.model.ProfileResponse
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
+import org.hyun.projectkmp.word.domain.model.UpdateProfileRequest
 import org.hyun.projectkmp.word.domain.model.WordRequestQuery
 
 interface RemoteWordDataSource {
@@ -64,4 +65,8 @@ interface RemoteWordDataSource {
     ): Result<CreateProfileResponse, DataError.Remote>
 
     suspend fun getProfile(): Result<ProfileResponse, DataError.Remote>
+
+    suspend fun updateProfile(
+        request: UpdateProfileRequest
+    ): Result<ProfileResponse, DataError.Remote>
 }

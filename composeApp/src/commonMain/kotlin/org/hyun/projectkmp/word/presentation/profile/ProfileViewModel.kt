@@ -4,14 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.hyun.projectkmp.app.Routes
 import org.hyun.projectkmp.core.domain.onError
 import org.hyun.projectkmp.core.domain.onSuccess
+import org.hyun.projectkmp.core.presentation.UiEffect
 import org.hyun.projectkmp.word.domain.Difficulty
 import org.hyun.projectkmp.word.domain.repository.WordRepository
 
@@ -31,10 +36,18 @@ class ProfileViewModel(
             _state.value
         )
 
+    private val _effect = MutableSharedFlow<UiEffect>()
+    val effect: SharedFlow<UiEffect> = _effect.asSharedFlow()
+
     fun onAction(action: ProfileAction) {
         when (action) {
             is ProfileAction.OnEditClick -> {
-                //click...
+                viewModelScope.launch {
+                    _effect.emit(UiEffect.NavigateTo(Routes.UpdateProfile))
+                }
+            }
+            is ProfileAction.OnBackClick -> {
+
             }
             else -> Unit
         }

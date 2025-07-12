@@ -29,6 +29,7 @@ import org.hyun.projectkmp.word.domain.model.LearningCompleteResponse
 import org.hyun.projectkmp.word.domain.model.LearningHistoriesRequest
 import org.hyun.projectkmp.word.domain.model.ProfileResponse
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
+import org.hyun.projectkmp.word.domain.model.UpdateProfileRequest
 import org.hyun.projectkmp.word.domain.model.WordRequestQuery
 
 class KtorRemoteWordDataSource(
@@ -134,6 +135,15 @@ class KtorRemoteWordDataSource(
     override suspend fun getProfile(): Result<ProfileResponse, DataError.Remote> {
         return safeCall {
             httpClient.get("$BASE_URL/profile")
+        }
+    }
+
+    override suspend fun updateProfile(request: UpdateProfileRequest): Result<ProfileResponse, DataError.Remote> {
+        return safeCall {
+            httpClient.post("$BASE_URL/profile/update"){
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
         }
     }
 }

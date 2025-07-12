@@ -27,6 +27,7 @@ import org.hyun.projectkmp.word.domain.model.LearningCompleteResponse
 import org.hyun.projectkmp.word.domain.model.LearningHistoriesRequest
 import org.hyun.projectkmp.word.domain.model.ProfileResponse
 import org.hyun.projectkmp.word.domain.model.SentencesRequestQuery
+import org.hyun.projectkmp.word.domain.model.UpdateProfileRequest
 import org.hyun.projectkmp.word.domain.model.WordRequestQuery
 import org.hyun.projectkmp.word.domain.repository.WordRepository
 
@@ -125,6 +126,13 @@ class DefaultWordRepository(
             )
         )
         return remoteWordDataSource.getProfile().onSuccess {
+            wordDao.profileUpsert(Profile(it.username, it.difficulty, it.topic, it.createdAt))
+            it
+        }
+    }
+
+    override suspend fun updateProfile(request: UpdateProfileRequest): Result<ProfileResponse, DataError.Remote> {
+        return remoteWordDataSource.updateProfile(request).onSuccess {
             wordDao.profileUpsert(Profile(it.username, it.difficulty, it.topic, it.createdAt))
             it
         }

@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,8 +29,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.hyun.projectkmp.app.Routes
 import org.hyun.projectkmp.core.presentation.DeepPurple
 import org.hyun.projectkmp.core.presentation.LightGray
+import org.hyun.projectkmp.core.presentation.UiEffect
 import org.hyun.projectkmp.word.presentation.components.ActionBar
 import org.jetbrains.compose.resources.stringResource
 import wordoftheday.composeapp.generated.resources.Res
@@ -39,16 +42,30 @@ import wordoftheday.composeapp.generated.resources.learning_profile
 @Composable
 fun ProfileScreenRoot(
     viewModel: ProfileViewModel,
-    onBackClick: (ProfileAction) -> Unit
+    showSnackBar: (String) -> Unit,
+    navigateTo: (Routes) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is UiEffect.ShowError -> {
+                    showSnackBar(effect.message)
+                }
+
+                is UiEffect.NavigateTo -> {
+                    navigateTo(effect.destination)
+                }
+
+                else -> Unit
+            }
+        }
+    }
+
     ProfileScreen(
         state = state,
         onAction = {
-            when (it) {
-                is ProfileAction.OnBackClick -> onBackClick(it)
-                else -> Unit
-            }
             viewModel.onAction(it)
         }
     )

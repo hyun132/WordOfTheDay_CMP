@@ -22,6 +22,7 @@ import org.hyun.projectkmp.word.presentation.history.HistoryViewModel
 import org.hyun.projectkmp.word.presentation.learning.LearningViewModel
 import org.hyun.projectkmp.word.presentation.profile.ProfileViewModel
 import org.hyun.projectkmp.word.presentation.profile.create.CreateProfileViewModel
+import org.hyun.projectkmp.word.presentation.profile.update.UpdateProfileViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
@@ -52,4 +53,5 @@ val sharedModule = module {
     viewModelOf(::SignupViewModel)
     viewModelOf(::CreateProfileViewModel)
     viewModelOf(::ResetPasswordViewModel)
+    viewModelOf(::UpdateProfileViewModel)
 }
