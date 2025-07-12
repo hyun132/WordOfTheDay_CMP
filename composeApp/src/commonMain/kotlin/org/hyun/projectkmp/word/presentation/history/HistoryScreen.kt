@@ -3,20 +3,22 @@ package org.hyun.projectkmp.word.presentation.history
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,17 +27,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.hyun.projectkmp.core.presentation.DeepPurple
+import org.hyun.projectkmp.core.presentation.LightGray
 import org.hyun.projectkmp.core.presentation.LightPurple
 import org.hyun.projectkmp.word.domain.LearningHistory
+import org.hyun.projectkmp.word.presentation.components.ActionBar
 import org.jetbrains.compose.resources.painterResource
 import wordoftheday.composeapp.generated.resources.Res
 import wordoftheday.composeapp.generated.resources.arrow_left
 import wordoftheday.composeapp.generated.resources.arrow_right
-import wordoftheday.composeapp.generated.resources.back
 
 @Composable
 fun HistoryScreenRoot(
@@ -58,13 +62,42 @@ fun HistoryScreenRoot(
 @Composable
 fun HistoryScreen(state: HistoryState, onAction: (HistoryAction) -> Unit) {
 
-    Column(modifier = Modifier.fillMaxWidth()) {
-        ActionBar(onAction)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFE8E8E8))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            ActionBar(title = "Learning records")
 
+            MonthSelector(onAction, state)
+
+            HistoryContents(state)
+        }
+    }
+}
+
+@Composable
+private fun MonthSelector(
+    onAction: (HistoryAction) -> Unit,
+    state: HistoryState
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(1.dp, LightGray)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 12.dp, end = 12.dp)
+                .padding(16.dp)
         ) {
             Icon(
                 painter = painterResource(Res.drawable.arrow_left),
@@ -87,10 +120,22 @@ fun HistoryScreen(state: HistoryState, onAction: (HistoryAction) -> Unit) {
                 contentDescription = "next month"
             )
         }
+    }
+}
+
+@Composable
+private fun HistoryContents(state: HistoryState) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(1.dp, LightGray)
+    ) {
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize()
-                .padding(8.dp)
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
 
             // 그룹 헤더
@@ -108,35 +153,6 @@ fun HistoryScreen(state: HistoryState, onAction: (HistoryAction) -> Unit) {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun ActionBar(onAction: (HistoryAction) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(64.dp)
-            .padding(start = 20.dp, end = 20.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(Res.drawable.back),
-            contentDescription = "",
-            modifier = Modifier
-                .clickable {
-                    onAction(HistoryAction.OnBackClick)
-                }
-                .size(24.dp)
-        )
-
-        Text(
-            text = "Learning records",
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleLarge,
-        )
-        Spacer(modifier = Modifier.width(24.dp))
     }
 }
 
