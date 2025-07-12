@@ -43,7 +43,6 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-            implementation(libs.androidx.room.runtime)
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
             implementation(libs.ktor.client.okhttp)
@@ -66,7 +65,6 @@ kotlin {
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.no.arg)
             implementation(libs.androidx.room.runtime)
-            implementation(libs.sqlite.bundled)
             api(libs.koin.core)
             implementation(libs.bundles.ktor)
             implementation(libs.bundles.coil)
@@ -78,12 +76,6 @@ kotlin {
         }
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)
-        }
-
-        dependencies {
-            ksp(libs.androidx.room.compiler)
-            ksp(libs.androidx.room.runtime)
-            ksp(libs.androidx.room.plugin)
         }
     }
 }
@@ -116,12 +108,11 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.runtime.android)
-    debugImplementation(compose.uiTooling)
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspDesktop", libs.androidx.room.compiler)
 }
 
 compose.desktop {
