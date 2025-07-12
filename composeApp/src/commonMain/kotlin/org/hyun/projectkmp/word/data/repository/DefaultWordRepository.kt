@@ -1,13 +1,12 @@
 package org.hyun.projectkmp.word.data.repository
 
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.hyun.projectkmp.core.domain.DataError
 import org.hyun.projectkmp.core.domain.Result
 import org.hyun.projectkmp.core.domain.map
 import org.hyun.projectkmp.core.domain.onSuccess
+import org.hyun.projectkmp.utils.getFormattedCurrentDate
+import org.hyun.projectkmp.word.data.dao.Profile
 import org.hyun.projectkmp.word.data.local.WordDao
 import org.hyun.projectkmp.word.data.mapper.toLearningHistory
 import org.hyun.projectkmp.word.data.mapper.toSentence
@@ -36,16 +35,8 @@ class DefaultWordRepository(
     private val wordDao: WordDao
 ) : WordRepository {
     override suspend fun getTodaysWord(requestQuery: WordRequestQuery): Result<Word, DataError.Remote> {
-        val date = with(
-            (Clock.System.now()
-                .toLocalDateTime(TimeZone.currentSystemDefault())
-                .date)
-        ) {
-            "${year}-${monthNumber.toString().padStart(2, '0')}-${
-                dayOfMonth.toString().padStart(2, '0')
-            }"
-        }
-        val word = wordDao.getTodaysWord(date).firstOrNull()
+        val date = getFormattedCurrentDate()
+        val word = wordDao.getTodaysWord(date)
         if (word != null) return Result.Success(
             data = Word(
                 word = word.word,
@@ -53,37 +44,26 @@ class DefaultWordRepository(
             )
         )
 
-        val result = remoteWordDataSource
+        return remoteWordDataSource
             .getTodaysWord(requestQuery)
             .map { it.toWord() }
-
-        result.onSuccess {
-            wordDao.upsert(org.hyun.projectkmp.word.data.dao.Word(it.word, it.meaning, date))
-        }
-
-        return result
+            .onSuccess {
+                wordDao.wordUpsert(org.hyun.projectkmp.word.data.dao.Word(it.word, it.meaning, date))
+                it
+            }
     }
 
     override suspend fun getNewWord(requestQuery: WordRequestQuery): Result<Word, DataError.Remote> {
-        val result = remoteWordDataSource
+
+        val date = getFormattedCurrentDate()
+
+        return remoteWordDataSource
             .getNewWord(requestQuery)
             .map { it.toWord() }
-
-        val date = with(
-            (Clock.System.now()
-                .toLocalDateTime(TimeZone.currentSystemDefault())
-                .date)
-        ) {
-            "${year}-${monthNumber.toString().padStart(2, '0')}-${
-                dayOfMonth.toString().padStart(2, '0')
-            }"
-        }
-
-        result.onSuccess {
-            wordDao.upsert(org.hyun.projectkmp.word.data.dao.Word(it.word, it.meaning, date))
-        }
-
-        return result
+            .onSuccess {
+                wordDao.wordUpsert(org.hyun.projectkmp.word.data.dao.Word(it.word, it.meaning, date))
+                it
+            }
     }
 
     override suspend fun getSentences(requestQuery: SentencesRequestQuery): Result<List<String>, DataError.Remote> {
@@ -128,12 +108,25 @@ class DefaultWordRepository(
     }
 
     override suspend fun createProfile(request: CreateProfileRequest): Result<CreateProfileResponse, DataError.Remote> {
-        val result = remoteWordDataSource.createProfile(request)
-
-        return result
+        return remoteWordDataSource.createProfile(request).onSuccess {
+            wordDao.profileUpsert(Profile(it.username, it.difficulty, it.topic, it.createdAt))
+            it
+        }
     }
 
     override suspend fun getProfile(): Result<ProfileResponse, DataError.Remote> {
-        return remoteWordDataSource.getProfile()
+        val profile = wordDao.getProfile()
+        if (profile != null) return Result.Success(
+            data = ProfileResponse(
+                profile.username,
+                profile.difficulty,
+                profile.topic,
+                profile.createdAt
+            )
+        )
+        return remoteWordDataSource.getProfile().onSuccess {
+            wordDao.profileUpsert(Profile(it.username, it.difficulty, it.topic, it.createdAt))
+            it
+        }
     }
 }

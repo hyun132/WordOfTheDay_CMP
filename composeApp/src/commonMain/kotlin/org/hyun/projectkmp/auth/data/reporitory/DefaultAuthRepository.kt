@@ -16,6 +16,7 @@ import org.hyun.projectkmp.auth.domain.dto.response.VerifyCodeResponse
 import org.hyun.projectkmp.auth.domain.repository.RemoteRepository
 import org.hyun.projectkmp.core.domain.DataError
 import org.hyun.projectkmp.core.domain.Result
+import org.hyun.projectkmp.core.domain.onSuccess
 
 class DefaultAuthRepository(
     private val dataSource: RemoteAuthDataSource
@@ -37,7 +38,11 @@ class DefaultAuthRepository(
     }
 
     override suspend fun getMyInfo(): Result<InfoResponse, DataError.Remote> {
-        return dataSource.getInfo()
+        val response = dataSource.getInfo()
+        response.onSuccess {
+
+        }
+        return response
     }
 
     override suspend fun requestSendCode(request: SendCodeRequest): Result<String, DataError.Remote> {

@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class CreateProfileResponse(
     val username: String,
     val difficulty: String,
-    val topic: String
+    val topic: String,
+    val createdAt:String,
 )

@@ -91,59 +91,61 @@ class WordHomeViewModel(
         }
     }
 
-    private fun getTodaysWord(subject: String, difficulty: Difficulty) = viewModelScope.launch {
-        wordRepository.getTodaysWord(
-            requestQuery = WordRequestQuery(
-                subject = subject,
-                difficulty = difficulty
+    private fun getTodaysWord(subject: String, difficulty: Difficulty) =
+        viewModelScope.launch(Dispatchers.IO) {
+            wordRepository.getTodaysWord(
+                requestQuery = WordRequestQuery(
+                    subject = subject,
+                    difficulty = difficulty
+                )
             )
-        )
-            .onSuccess { word ->
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = null,
-                        word = word.word,
-                        meaning = word.meaning
-                    )
+                .onSuccess { word ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = null,
+                            word = word.word,
+                            meaning = word.meaning
+                        )
+                    }
                 }
-            }
-            .onError { error ->
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        word = "Today's Word",
-                        meaning = "오늘의 단어",
-                        errorMessage = error.toUiText()
-                    )
+                .onError { error ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            word = "Today's Word",
+                            meaning = "오늘의 단어",
+                            errorMessage = error.toUiText()
+                        )
+                    }
                 }
-            }
-    }
+        }
 
-    private fun getNewWord(subject: String, difficulty: Difficulty) = viewModelScope.launch {
-        wordRepository.getNewWord(
-            requestQuery = WordRequestQuery(
-                subject = subject,
-                difficulty = difficulty
+    private fun getNewWord(subject: String, difficulty: Difficulty) =
+        viewModelScope.launch(Dispatchers.IO) {
+            wordRepository.getNewWord(
+                requestQuery = WordRequestQuery(
+                    subject = subject,
+                    difficulty = difficulty
+                )
             )
-        )
-            .onSuccess { word ->
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = null,
-                        word = word.word,
-                        meaning = word.meaning
-                    )
+                .onSuccess { word ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = null,
+                            word = word.word,
+                            meaning = word.meaning
+                        )
+                    }
                 }
-            }
-            .onError { error ->
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = error.toUiText()
-                    )
+                .onError { error ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.toUiText()
+                        )
+                    }
                 }
-            }
-    }
+        }
 }
