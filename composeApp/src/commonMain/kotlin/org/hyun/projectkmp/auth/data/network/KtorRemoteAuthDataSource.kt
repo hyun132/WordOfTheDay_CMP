@@ -28,7 +28,8 @@ class KtorRemoteAuthDataSource(
     val httpClient: HttpClient
 ) : RemoteAuthDataSource {
     //    val BASE_URL = "http://192.168.35.185:8080/api/auth"
-    val BASE_URL = "http://10.0.2.2:8080/api"
+//    val BASE_URL = "http://10.0.2.2:8080/api"
+    val BASE_URL = "https://hyun-wordoftheday.duckdns.org/api"
 
     override suspend fun signUp(request: SignupRequest): Result<SignupResponse, DataError.Remote> {
         return safeCall {

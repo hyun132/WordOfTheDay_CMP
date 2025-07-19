@@ -24,8 +24,8 @@ import org.hyun.projectkmp.auth.domain.dto.LoginResponse
 
 object HttpClientFactory {
 
-    const val BASE_URL = "http://10.0.2.2:8080/api"
-
+//    const val BASE_URL = "http://10.0.2.2:8080/api"
+    const val BASE_URL = "https://hyun-wordoftheday.duckdns.org/api"
     //private const val BASE_URL = "http://211.209.109.153:8080/api"
     fun create(engine: HttpClientEngine): HttpClient {
         return HttpClient(engine) {
