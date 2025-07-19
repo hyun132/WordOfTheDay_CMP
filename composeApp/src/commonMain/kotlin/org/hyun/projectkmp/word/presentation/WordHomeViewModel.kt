@@ -38,7 +38,7 @@ class WordHomeViewModel(
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
-            _state.value
+            WordHomeState()
         )
 
     private val _effect = MutableSharedFlow<UiEffect>()
@@ -71,6 +71,9 @@ class WordHomeViewModel(
     }
 
     fun getProfile() {
+        _state.update {
+            it.copy(isLoading = true)
+        }
         viewModelScope.launch(Dispatchers.IO) {
             wordRepository.getProfile()
                 .onSuccess { response ->
@@ -93,6 +96,9 @@ class WordHomeViewModel(
 
     private fun getTodaysWord(subject: String, difficulty: Difficulty) =
         viewModelScope.launch(Dispatchers.IO) {
+            _state.update {
+                it.copy(isLoading = true)
+            }
             wordRepository.getTodaysWord(
                 requestQuery = WordRequestQuery(
                     subject = subject,
@@ -123,6 +129,9 @@ class WordHomeViewModel(
 
     private fun getNewWord(subject: String, difficulty: Difficulty) =
         viewModelScope.launch(Dispatchers.IO) {
+            _state.update {
+                it.copy(isLoading = true)
+            }
             wordRepository.getNewWord(
                 requestQuery = WordRequestQuery(
                     subject = subject,
