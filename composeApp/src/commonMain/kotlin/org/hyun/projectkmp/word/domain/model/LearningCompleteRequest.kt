@@ -4,5 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class LearningCompleteRequest(
-    val word: String
+    val word: String,
+    val meaning:String
 )

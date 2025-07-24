@@ -3,18 +3,22 @@ package org.hyun.projectkmp.word.presentation.learning
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import org.hyun.projectkmp.VoiceRecognizer
 import org.hyun.projectkmp.core.domain.onError
 import org.hyun.projectkmp.core.domain.onSuccess
 import org.hyun.projectkmp.core.presentation.toUiText
+import org.hyun.projectkmp.word.SttWebSocketClient
 import org.hyun.projectkmp.word.domain.Difficulty
 import org.hyun.projectkmp.word.domain.Mode
+import org.hyun.projectkmp.word.domain.Word
 import org.hyun.projectkmp.word.domain.model.AnswerCheckRequest
 import org.hyun.projectkmp.word.domain.model.BookMarkRequestQuery
 import org.hyun.projectkmp.word.domain.model.LearningCompleteRequest
@@ -24,9 +28,9 @@ import org.hyun.projectkmp.word.domain.repository.WordRepository
 class LearningViewModel(
     private val repository: WordRepository,
     private val recognizer: VoiceRecognizer,
+    private val sttClient: SttWebSocketClient,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private var silenceTimerJob: Job? = null
 
     private val _state = MutableStateFlow(LeaningState())
     val state: StateFlow<LeaningState> = _state
@@ -178,7 +182,7 @@ class LearningViewModel(
         }
     }
 
-    fun submitAnswer(word: String, progress: Int, mode: Mode, origin: String, userInput: String) {
+    fun submitAnswer(word: Word, progress: Int, mode: Mode, origin: String, userInput: String) {
         viewModelScope.launch {
             repository.checkAnswer(
                 AnswerCheckRequest(
@@ -188,16 +192,12 @@ class LearningViewModel(
                 )
             )
                 .onSuccess { result ->
-                    var isDone = false
-                    _state.update {
+                    var isDone = _state.updateAndGet {
                         val updatedItems = it.sentenceItems.toMutableList().apply {
                             this[progress] = this[progress].copy(isCorrect = result.isCorrect)
                         }
-                        isDone = updatedItems.all { it.isCorrect == true }
-                        it.copy(
-                            sentenceItems = updatedItems
-                        )
-                    }
+                        it.copy(sentenceItems = updatedItems)
+                    }.sentenceItems.all { it.isCorrect == true }
                     if (isDone) saveLearningCompleted(word)
                 }
                 .onError { e ->
@@ -211,7 +211,7 @@ class LearningViewModel(
         }
     }
 
-    fun saveLearningCompleted(word: String) {
+    fun saveLearningCompleted(word: Word) {
         viewModelScope.launch {
             _state.update {
                 it.copy(
@@ -220,7 +220,8 @@ class LearningViewModel(
             }
             repository.saveLearningHistory(
                 LearningCompleteRequest(
-                    word = word
+                    word = word.word,
+                    meaning = word.meaning
                 )
             )
                 .onSuccess {
@@ -242,41 +243,49 @@ class LearningViewModel(
         }
     }
 
-    fun toggleRecognition(word: String) {
-        if (recognizer.isRecognizing()) {
-            recognizer.stopRecognition()
-            silenceTimerJob?.cancel()
-            _state.update { it.copy(isRecording = false) }
-        } else {
-            recognizer.startRecognition(
-                onText = { text ->
-                    println("Recognized: $text")
-                    _state.update { it.copy(isRecording = true) }
-                    val progress = state.value.progress
-                    val item = state.value.sentenceItems[progress]
-                    submitAnswer(
-                        word = word,
-                        progress = progress,
-                        mode = state.value.mode,
-                        origin = item.sentence,
-                        userInput = text
-                    )
-                    restartSilenceTimer()
-                },
-                onFinished = {
-                    _state.update { it.copy(isRecording = false) }
-                    println("Recognition finished due to silence.")
-                }
-            )
-            restartSilenceTimer()
+    fun toggleRecognition(word: Word) {
+        if (state.value.isRecording) {
+            sttClient.sendStopMessage() // or session.send(Frame.Text("STOP"))
+            stopRecord()
+            return
         }
+
+        // 1. 상태 갱신은 가능한 한 먼저
+        _state.update { it.copy(isRecording = true) }
+
+        // 2. 서버 WebSocket 연결
+        viewModelScope.launch(Dispatchers.IO) {
+            sttClient.connect { text ->
+                val progress = state.value.progress
+                val item = state.value.sentenceItems[progress]
+                submitAnswer(word, progress, state.value.mode, item.sentence, text)
+                stopRecord() // Recognized 결과가 도착했을 때 녹음 종료
+            }
+        }
+
+        // 3. 로컬 마이크 인식 시작
+        recognizer.startRecognition(
+            onData = { audioBytes ->
+                viewModelScope.launch(Dispatchers.IO) {
+                    sttClient.sendAudio(audioBytes)
+                }
+            },
+            onFinished = {
+                stopRecord()
+                println("Recognition finished due to silence.")
+            }
+        )
     }
 
-    private fun restartSilenceTimer() {
-        silenceTimerJob?.cancel()
-        silenceTimerJob = viewModelScope.launch {
-            delay(3000) // 3초간 입력 없으면 중단
-            recognizer.stopRecognition()
+    fun stopRecord() {
+        if (!state.value.isRecording) return // 중복 호출 방지
+
+        recognizer.stopRecognition()
+        viewModelScope.launch(Dispatchers.IO) {
+            sttClient.sendStopMessage() // STOP 먼저
+            sttClient.close()           // WebSocket 종료
         }
+        _state.update { it.copy(isRecording = false) }
     }
+
 }

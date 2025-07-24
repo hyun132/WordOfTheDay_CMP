@@ -14,7 +14,7 @@ import org.koin.dsl.module
 actual val platformModule: Module
     get() = module {
         single<HttpClientEngine> { OkHttp.create() }
-        single<VoiceRecognizer> { AndroidVoiceRecognizer(androidContext()) }
+        single<VoiceRecognizer> { AndroidVoiceRecognizer() }
         single<WordRoomDatabase> {
             val builder = getDatabaseBuilder(context = get())
             getWordDatabase(builder)

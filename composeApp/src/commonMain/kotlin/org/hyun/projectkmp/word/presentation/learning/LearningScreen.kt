@@ -55,6 +55,7 @@ import org.hyun.projectkmp.core.presentation.DeepPurple
 import org.hyun.projectkmp.core.presentation.LightGray
 import org.hyun.projectkmp.core.presentation.LightPurple
 import org.hyun.projectkmp.word.domain.Mode
+import org.hyun.projectkmp.word.domain.Word
 import org.hyun.projectkmp.word.presentation.WordHomeState
 import org.hyun.projectkmp.word.presentation.components.ActionBar
 import org.hyun.projectkmp.word.presentation.components.LineProgressBar
@@ -86,7 +87,7 @@ fun LearningScreenRoot(
         viewModel.getSentences(wordState.word, wordState.meaning, wordState.difficulty)
     }
 
-    LearningScreen(state = state, word = wordState.word) { action ->
+    LearningScreen(state = state, word = Word(wordState.word,wordState.meaning)) { action ->
         when (action) {
             is LearningAction.OnBackClick -> {
                 onBackClick()
@@ -99,14 +100,14 @@ fun LearningScreenRoot(
 }
 
 @Composable
-fun LearningScreen(state: LeaningState, word: String, onAction: (LearningAction) -> Unit) {
+fun LearningScreen(state: LeaningState, word: Word, onAction: (LearningAction) -> Unit) {
     Box(modifier = Modifier.fillMaxSize().background(LightPurple)) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            ActionbarContents(word, state.mode, onAction)
+            ActionbarContents(word.word, state.mode, onAction)
             if (state.isLoading) {
                 Box(
                     modifier = Modifier
@@ -184,7 +185,7 @@ fun ActionbarContents(
 fun SentenceContents(
     state: LeaningState,
     pagerState: PagerState,
-    word: String,
+    word: Word,
     onAction: (LearningAction) -> Unit,
     modifier: Modifier
 ) {

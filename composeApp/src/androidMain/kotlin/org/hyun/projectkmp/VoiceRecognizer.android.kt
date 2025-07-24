@@ -1,81 +1,80 @@
 package org.hyun.projectkmp
 
-import android.content.Context
-import android.content.Intent
-import android.os.Bundle
-import android.speech.RecognitionListener
-import android.speech.RecognizerIntent
-import android.speech.SpeechRecognizer
+import android.Manifest
+import android.media.AudioFormat
+import android.media.AudioRecord
+import android.media.MediaRecorder
+import android.util.Log
+import androidx.annotation.RequiresPermission
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class AndroidVoiceRecognizer(private val context: Context) : VoiceRecognizer {
-    private var recognizer: SpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
-    private var isActive = false
+class AndroidVoiceRecognizer() : VoiceRecognizer {
+    private var audioRecord: AudioRecord? = null
+    private var recordJob: Job? = null
+    @Volatile private var isRecording = false
+    var isActive = false
 
-    override fun startRecognition(onText: (String) -> Unit, onFinished: () -> Unit) {
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(
-                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH
-            )
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US")
-            putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 3000)
-            putExtra(
-                RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS,
-                3000
-            )
+    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
+    override fun startRecognition(onData: (ByteArray) -> Unit, onFinished: () -> Unit) {
+        stopRecognition()
+
+        val sampleRate = 16000
+        val bufferSize = AudioRecord.getMinBufferSize(
+            sampleRate,
+            AudioFormat.CHANNEL_IN_MONO,
+            AudioFormat.ENCODING_PCM_16BIT
+        )
+
+        audioRecord = AudioRecord(
+            MediaRecorder.AudioSource.MIC,
+            sampleRate,
+            AudioFormat.CHANNEL_IN_MONO,
+            AudioFormat.ENCODING_PCM_16BIT,
+            bufferSize
+        )
+
+        isRecording = true
+        audioRecord?.startRecording()
+
+        recordJob = CoroutineScope(Dispatchers.IO).launch {
+            val buffer = ByteArray(bufferSize)
+            while (isRecording) {
+                val readBytes = audioRecord?.read(buffer, 0, buffer.size) ?: 0
+                print("readBytes : $readBytes")
+                if (readBytes > 0) {
+                    onData(buffer.copyOf(readBytes))
+                }
+            }
+
+            stopInternal()
+            withContext(Dispatchers.Main) {
+                onFinished()
+            }
         }
-
-        recognizer.setRecognitionListener(object : RecognitionListener {
-            override fun onResults(results: Bundle) {
-                val text =
-                    results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()
-                text?.let(onText)
-                onFinished()
-            }
-
-            override fun onReadyForSpeech(params: Bundle?) {
-
-            }
-
-            override fun onBeginningOfSpeech() {
-            }
-
-            override fun onRmsChanged(rmsdB: Float) {
-
-            }
-
-            override fun onBufferReceived(buffer: ByteArray?) {
-
-            }
-
-            override fun onEndOfSpeech() {
-
-            }
-
-            override fun onError(error: Int) {
-                onFinished()
-            }
-
-            override fun onPartialResults(partialResults: Bundle) {
-                val text = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                    ?.firstOrNull()
-                text?.let(onText)
-            }
-
-            override fun onEvent(eventType: Int, params: Bundle?) {
-            }
-        })
-
-        recognizer.startListening(intent)
-        isActive = true
     }
 
     override fun stopRecognition() {
-        recognizer.stopListening()
-        isActive = false
+        isRecording = false
+        recordJob?.cancel()
+        stopInternal()
     }
 
-    override fun isRecognizing(): Boolean = isActive
+    private fun stopInternal() {
+        try {
+            if (audioRecord?.recordingState == AudioRecord.RECORDSTATE_RECORDING) {
+                audioRecord?.stop()
+            }
+            audioRecord?.release()
+        } catch (e: IllegalStateException) {
+            Log.w("VoiceRecognizer", "AudioRecord stop failed: ${e.message}")
+        }
+        audioRecord = null
+    }
+
 }
 
 lateinit var voiceRecognizerInstance: VoiceRecognizer

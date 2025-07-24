@@ -63,7 +63,7 @@ object HttpClientFactory {
                         try {
                             val refreshToken = Settings().getString("refresh", "")
 
-                            val responseStr = client.post("${BASE_URL}/api/auth/refresh") {
+                            val responseStr = client.post("${BASE_URL}/auth/refresh") {
                                 header("Authorization", "Bearer $refreshToken")
                             }.bodyAsText()
 

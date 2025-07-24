@@ -9,6 +9,7 @@ import org.hyun.projectkmp.auth.presentation.login.LoginViewModel
 import org.hyun.projectkmp.auth.presentation.reset_password.ResetPasswordViewModel
 import org.hyun.projectkmp.auth.presentation.signup.SignupViewModel
 import org.hyun.projectkmp.core.data.HttpClientFactory
+import org.hyun.projectkmp.word.SttWebSocketClient
 import org.hyun.projectkmp.word.data.local.WordDao
 import org.hyun.projectkmp.word.data.local.WordRoomDatabase
 import org.hyun.projectkmp.word.data.network.KtorRemoteWordDataSource
@@ -43,12 +44,13 @@ val sharedModule = module {
     singleOf(::KtorRemoteAuthDataSource).bind<RemoteAuthDataSource>()
     singleOf(::DefaultAuthRepository).bind<RemoteRepository>()
     single { Settings() }
+    singleOf(::SttWebSocketClient)
 
     viewModelOf(::WordHomeViewModel)
     viewModelOf(::HistoryViewModel)
     viewModelOf(::BookmarkViewModel)
     viewModelOf(::ProfileViewModel)
-    viewModel { LearningViewModel(get(), get(), get()) }
+    viewModel { LearningViewModel(get(), get(), get(), get()) }
     viewModelOf(::LoginViewModel)
     viewModelOf(::SignupViewModel)
     viewModelOf(::CreateProfileViewModel)
