@@ -7,10 +7,11 @@ Android, iOS, Desktop에서 동일한 코어 로직으로 동작하며, 텍스�
 
 - Kotlin Multiplatform (Android / iOS / Desktop)
 - Jetpack Compose Multiplatform (UI)
-- SpeechRecognizer (Android 음성 인식) / SFSpeechRecognizer (iOS 음성 인식)
+- Google Cloud STT
 - Koin (DI)
-- Ktor (네트워크 통신)
+- Ktor + WebSocket (네트워크 통신)
 - Gradle Kotlin DSL
+- Room (DB)
 
 
 ## 🎯 주요 기능
@@ -18,4 +19,4 @@ Android, iOS, Desktop에서 동일한 코어 로직으로 동작하며, 텍스�
 - ✅ 매일 추천 영어 단어 제시
 - 🎤 실시간 음성 인식으로 문장 말하기 연습
 - 📊 학습 기록 저장 및 연속 학습일수 관리
-- 🧠 난이도별 단어 학습 (BEGINNER, INTERMEDIATE, ADVANCED)
+- 🧠 난이도별 단어 학습 (BEGINNER, ELEMENTARY, INTERMEDIATE, UPPER_INTERMEDIATE, ADVANCED)
