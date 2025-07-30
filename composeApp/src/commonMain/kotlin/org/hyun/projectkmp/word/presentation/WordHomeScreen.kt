@@ -3,6 +3,7 @@ package org.hyun.projectkmp.word.presentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -22,17 +23,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.hyun.projectkmp.app.Routes
 import org.hyun.projectkmp.core.presentation.DeepPurple
 import org.hyun.projectkmp.core.presentation.LightPurple
 import org.hyun.projectkmp.core.presentation.UiEffect
+import org.hyun.projectkmp.word.presentation.components.ActionBar
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -81,26 +81,21 @@ fun WordHomeScreen(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .background(LightPurple)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = stringResource(Res.string.home_title),
-                fontSize = 24.sp,
-                modifier = Modifier.padding(20.dp).fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
+            ActionBar(title = stringResource(Res.string.home_title))
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(2f)
-                    .background(shape = RoundedCornerShape(12.dp), color = Color.Transparent)
+                    .background(shape = RoundedCornerShape(12.dp), color = Color.White)
                     .border(width = 1.dp, color = DeepPurple, shape = RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
@@ -132,7 +127,6 @@ fun WordHomeScreen(
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(20.dp))
 
             Button(
                 modifier = Modifier
@@ -158,7 +152,7 @@ fun WordHomeScreen(
                     textAlign = TextAlign.Center
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
+
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
