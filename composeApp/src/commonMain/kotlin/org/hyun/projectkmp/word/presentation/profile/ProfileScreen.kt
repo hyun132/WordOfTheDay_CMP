@@ -139,11 +139,6 @@ fun ProfileScreen(
                             number = state.learnedWordCount.toString(),
                             modifier = Modifier.Companion.weight(1f)
                         )
-                        NumberContents(
-                            title = stringResource(Res.string.learned_word_count),
-                            number = state.learnedWordCount.toString(),
-                            modifier = Modifier.Companion.weight(1f)
-                        )
                     }
 
                     RowContents("difficulty", state.difficulty.name)

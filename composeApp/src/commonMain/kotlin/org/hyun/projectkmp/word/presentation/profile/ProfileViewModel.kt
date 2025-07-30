@@ -62,7 +62,8 @@ class ProfileViewModel(
                             isLoading = false,
                             difficulty = Difficulty.valueOf(response.difficulty),
                             topic = response.topic,
-                            username = response.username
+                            username = response.username,
+                            signUpDate = response.createdAt
                         )
                     }
                 }
