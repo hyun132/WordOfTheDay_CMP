@@ -146,9 +146,9 @@ private fun HistoryContents(state: HistoryState) {
                     color = DeepPurple
                 )
             }
-            state.histories.forEach { (key, list) ->
+            state.histories.keys.sortedDescending().forEach { key ->
                 // 그룹 내 항목들
-                items(list) { history ->
+                items(state.histories[key]?: emptyList()) { history ->
                     HistoryItem(history)
                 }
             }
