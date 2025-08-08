@@ -6,8 +6,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,6 +40,7 @@ import org.jetbrains.compose.resources.stringResource
 import wordoftheday.composeapp.generated.resources.Res
 import wordoftheday.composeapp.generated.resources.learned_word_count
 import wordoftheday.composeapp.generated.resources.learning_profile
+import wordoftheday.composeapp.generated.resources.longest_streak
 
 @Composable
 fun ProfileScreenRoot(
@@ -131,13 +134,20 @@ fun ProfileScreen(
 
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         NumberContents(
                             title = stringResource(Res.string.learned_word_count),
                             number = state.learnedWordCount.toString(),
                             modifier = Modifier.Companion.weight(1f)
+                        )
+                        NumberContents(
+                            title = stringResource(Res.string.longest_streak),
+                            number = state.longestStreak.toString(),
+                            modifier = Modifier.Companion.weight(1f)
+                                .fillMaxHeight()
                         )
                     }
 
@@ -166,7 +176,7 @@ fun NumberContents(title: String, number: String, modifier: Modifier) {
         ) {
             Text(
                 text = title,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().weight(1f),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelMedium
             )

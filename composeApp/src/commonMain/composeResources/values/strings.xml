@@ -18,6 +18,7 @@
     <string name="error_forbidden">Forbidden</string>
 
     <string name="learned_word_count">Number of words learned</string>
+    <string name="longest_streak">Longest Streak</string>
 
     <string name="learning_completed">Done</string>
     <string name="close_dialog">close</string>

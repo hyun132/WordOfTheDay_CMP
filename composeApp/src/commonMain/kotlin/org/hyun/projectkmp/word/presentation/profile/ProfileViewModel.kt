@@ -63,7 +63,8 @@ class ProfileViewModel(
                             difficulty = Difficulty.valueOf(response.difficulty),
                             topic = response.topic,
                             username = response.username,
-                            signUpDate = response.createdAt
+                            signUpDate = response.createdAt,
+                            longestStreak = response.longestStreak
                         )
                     }
                 }

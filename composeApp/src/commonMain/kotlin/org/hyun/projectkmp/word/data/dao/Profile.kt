@@ -9,5 +9,6 @@ class Profile(
     val username: String,
     val difficulty: String,
     val topic: String,
-    val createdAt:String
+    val createdAt:String,
+    val longestStreak:Int
 )

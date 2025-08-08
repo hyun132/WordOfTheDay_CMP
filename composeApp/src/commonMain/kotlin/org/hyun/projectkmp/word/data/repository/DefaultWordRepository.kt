@@ -110,7 +110,7 @@ class DefaultWordRepository(
 
     override suspend fun createProfile(request: CreateProfileRequest): Result<CreateProfileResponse, DataError.Remote> {
         return remoteWordDataSource.createProfile(request).onSuccess {
-            wordDao.profileUpsert(Profile(it.username, it.difficulty, it.topic, it.createdAt))
+            wordDao.profileUpsert(Profile(it.username, it.difficulty, it.topic, it.createdAt, 0))
             it
         }
     }
@@ -122,18 +122,19 @@ class DefaultWordRepository(
                 profile.username,
                 profile.difficulty,
                 profile.topic,
-                profile.createdAt
+                profile.createdAt,
+                profile.longestStreak
             )
         )
         return remoteWordDataSource.getProfile().onSuccess {
-            wordDao.profileUpsert(Profile(it.username, it.difficulty, it.topic, it.createdAt))
+            wordDao.profileUpsert(Profile(it.username, it.difficulty, it.topic, it.createdAt, it.longestStreak))
             it
         }
     }
 
     override suspend fun updateProfile(request: UpdateProfileRequest): Result<ProfileResponse, DataError.Remote> {
         return remoteWordDataSource.updateProfile(request).onSuccess {
-            wordDao.profileUpsert(Profile(it.username, it.difficulty, it.topic, it.createdAt))
+            wordDao.profileUpsert(Profile(it.username, it.difficulty, it.topic, it.createdAt, it.longestStreak))
             it
         }
     }
